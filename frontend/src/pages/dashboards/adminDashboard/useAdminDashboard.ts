@@ -8,8 +8,7 @@ import { checkPasswordStrength } from "../../../utils/password";
 import type { User, ActivityLog, UserRole, Subject } from "../../../types";
 import {
   LOG_PAGE_SIZE,
-  MODERATION_FILTER,
-  ACTION_GROUPS,
+  LOG_CATEGORIES,
   actionLabel,
   actionCategory,
   DEFAULT_SEMESTERS,
@@ -51,11 +50,26 @@ export function useAdminDashboard(defaultTab: "overview" | "logs" | "users" | "a
   // Log Refresh State
   const [lastRefreshed, setLastRefreshed] = useState<string>(new Date().toLocaleTimeString());
 
-  // Log Filters & Search State
-  const [searchLog, setSearchLog] = useState("");
-  const [selectedActionFilter, setSelectedActionFilter] = useState("all");
-  const [selectedLogRoleFilter, setSelectedLogRoleFilter] = useState("all");
+  // Log Filters & Search State (raw setters; page-resetting wrappers are exposed below)
+  const [searchLog, setSearchLogState] = useState("");
+  const [selectedActionFilter, setSelectedActionFilterState] = useState("all");
+  const [selectedLogRoleFilter, setSelectedLogRoleFilterState] = useState("all");
   const [selectedLogModal, setSelectedLogModal] = useState<ActivityLog | null>(null);
+
+  const setSearchLog = useCallback((value: string) => {
+    setSearchLogState(value);
+    setLogPage(1);
+  }, []);
+
+  const setSelectedActionFilter = useCallback((value: string) => {
+    setSelectedActionFilterState(value);
+    setLogPage(1);
+  }, []);
+
+  const setSelectedLogRoleFilter = useCallback((value: string) => {
+    setSelectedLogRoleFilterState(value);
+    setLogPage(1);
+  }, []);
 
   const [searchUser, setSearchUser] = useState("");
   const [selectedUserRoleFilter, setSelectedUserRoleFilter] = useState<string>(searchParams.get("role") || "all");
@@ -136,7 +150,7 @@ export function useAdminDashboard(defaultTab: "overview" | "logs" | "users" | "a
       const params = new URLSearchParams();
       params.set("page", String(page));
       params.set("limit", String(limit));
-      if (selectedActionFilter !== "all") params.set("action", selectedActionFilter);
+      if (selectedActionFilter !== "all") params.set("category", selectedActionFilter);
       if (selectedLogRoleFilter !== "all") params.set("role", selectedLogRoleFilter);
       if (searchLog.trim()) params.set("search", searchLog.trim());
       const res = await authFetch(`/api/logs?${params.toString()}`);
@@ -623,7 +637,7 @@ export function useAdminDashboard(defaultTab: "overview" | "logs" | "users" | "a
         const params = new URLSearchParams();
         params.set("page", String(page));
         params.set("limit", String(limit));
-        if (selectedActionFilter !== "all") params.set("action", selectedActionFilter);
+        if (selectedActionFilter !== "all") params.set("category", selectedActionFilter);
         if (selectedLogRoleFilter !== "all") params.set("role", selectedLogRoleFilter);
         if (searchLog.trim()) params.set("search", searchLog.trim());
         const res = await authFetch(`/api/logs?${params.toString()}`);
@@ -784,6 +798,7 @@ export function useAdminDashboard(defaultTab: "overview" | "logs" | "users" | "a
     setSubjects,
     loadingLogs,
     setLoadingLogs,
+    exportingLogs,
     lastRefreshed,
     setLastRefreshed,
     searchLog,
@@ -929,8 +944,7 @@ export function useAdminDashboard(defaultTab: "overview" | "logs" | "users" | "a
     pagedUsers,
     actionLabel,
     actionCategory,
-    MODERATION_FILTER,
-    ACTION_GROUPS,
+    LOG_CATEGORIES,
     DEFAULT_SEMESTERS,
     DEFAULT_COURSES,
   };

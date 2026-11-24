@@ -2,7 +2,7 @@
 
 import datetime
 
-from flask import request
+from flask import g, request
 
 from extensions import db
 from lib.id import generate_id
@@ -30,6 +30,9 @@ def log_action(user_id, user_name, user_role, action, details):
         )
         db.session.add(log_item)
         db.session.flush()
+        # Flag the request so app-level after_request can persist entries that
+        # are staged *after* an endpoint's last explicit commit.
+        g.audit_log_pending = True
     except Exception as e:
         print("Failed to record audit log:", e)
         try:

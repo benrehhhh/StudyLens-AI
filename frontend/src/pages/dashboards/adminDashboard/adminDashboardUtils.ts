@@ -1,7 +1,5 @@
 export const LOG_PAGE_SIZE = 10;
 
-export const MODERATION_FILTER = "__moderation__";
-
 export const ACTION_LABELS: Record<string, string> = {
   USER_LOGIN: "User logged in",
   USER_REGISTER: "New account registered",
@@ -13,6 +11,14 @@ export const ACTION_LABELS: Record<string, string> = {
   RESET_OTP_REQUESTED: "Password reset requested",
   PASSWORD_CHANGED: "Password changed",
   LOGIN_FAILED: "Failed login attempt",
+  LOGIN_LOCKED: "Login temporarily blocked",
+  ACCOUNT_LOCKED: "Account locked",
+  LOGIN_DISABLED: "Login blocked (disabled account)",
+  EMAIL_VERIFY_REQUIRED: "Email verification required",
+  EMAIL_VERIFY_RESUMED: "Registration resumed",
+  EMAIL_VERIFIED: "Email address verified",
+  TWO_FACTOR_REQUIRED: "Two-factor code issued",
+  LOGOUT_ALL_DEVICES: "Signed out of all devices",
   MATERIAL_UPLOAD: "Material uploaded",
   MATERIAL_UPDATE: "Material updated",
   MATERIAL_DELETE: "Material deleted",
@@ -63,6 +69,14 @@ export const ACTION_CATEGORY: Record<string, { group: string; badge: string }> =
   RESET_OTP_REQUESTED: { group: "Accounts & Authentication", badge: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
   PASSWORD_CHANGED: { group: "Accounts & Authentication", badge: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
   LOGIN_FAILED: { group: "Accounts & Authentication", badge: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
+  LOGIN_LOCKED: { group: "Accounts & Authentication", badge: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
+  ACCOUNT_LOCKED: { group: "Accounts & Authentication", badge: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
+  LOGIN_DISABLED: { group: "Accounts & Authentication", badge: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
+  EMAIL_VERIFY_REQUIRED: { group: "Accounts & Authentication", badge: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
+  EMAIL_VERIFY_RESUMED: { group: "Accounts & Authentication", badge: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
+  EMAIL_VERIFIED: { group: "Accounts & Authentication", badge: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" },
+  TWO_FACTOR_REQUIRED: { group: "Accounts & Authentication", badge: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
+  LOGOUT_ALL_DEVICES: { group: "Accounts & Authentication", badge: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
   MATERIAL_UPLOAD: { group: "Learning Materials", badge: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" },
   MATERIAL_UPDATE: { group: "Learning Materials", badge: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" },
   MATERIAL_DELETE: { group: "Learning Materials", badge: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" },
@@ -102,31 +116,13 @@ export const ACTION_CATEGORY: Record<string, { group: string; badge: string }> =
   DIAGNOSTIC_CHECK: { group: "System & Announcements", badge: "bg-rose-500/10 text-rose-600 dark:text-rose-400" },
 };
 
-export const ACTION_GROUPS: { group: string; codes: string[] }[] = [
-  {
-    group: "Accounts & Authentication",
-    codes: ["USER_LOGIN", "USER_REGISTER", "USER_CREATED", "USER_UPDATED", "USER_STATUS_CHANGED", "USER_DELETED", "PASSWORD_CHANGED", "PASSWORD_RESET", "RESET_OTP_REQUESTED", "LOGIN_FAILED"],
-  },
-  {
-    group: "Learning Materials",
-    codes: ["MATERIAL_UPLOAD", "MATERIAL_UPDATE", "MATERIAL_DELETE", "MATERIAL_AI_SAVE", "MATERIAL_FLAG", "MATERIAL_FLAG_RESOLVED"],
-  },
-  {
-    group: "Quizzes & Assessments",
-    codes: ["QUIZ_CREATE", "QUIZ_UPDATE", "QUIZ_DELETE", "QUIZ_PUBLISH", "QUIZ_UNPUBLISH", "QUIZ_SUBMIT"],
-  },
-  {
-    group: "Subjects & Enrollments",
-    codes: ["SUBJECT_CREATE", "SUBJECT_UPDATE", "SUBJECT_DELETE", "SUBJECT_ENROLL", "SUBJECT_UNENROLL"],
-  },
-  {
-    group: "AI Generation & Resources",
-    codes: ["AI_QUIZ_GENERATE", "AI_SUMMARY_GENERATE", "AI_REVIEWER_GENERATE", "AI_FLASHCARDS_GENERATE", "AI_RESOURCE_GENERATE", "AI_RESOURCE_SAVE", "AI_SERVICE_DOWN", "FLASHCARD_UPDATE", "FLASHCARD_DELETE", "SUMMARY_UPDATE", "SUMMARY_DELETE", "REVIEWER_UPDATE", "REVIEWER_DELETE"],
-  },
-  {
-    group: "System & Announcements",
-    codes: ["ANNOUNCEMENT_POSTED", "ANNOUNCEMENT_DELETED", "SETTINGS_UPDATED", "SYSTEM_BOOT", "REPORT_GENERATE", "LOGS_CLEARED", "DIAGNOSTIC_CHECK"],
-  },
+export const LOG_CATEGORIES: { value: string; label: string }[] = [
+  { value: "accounts", label: "Accounts & Security" },
+  { value: "materials", label: "Learning Materials" },
+  { value: "quizzes", label: "Quizzes & Assessments" },
+  { value: "subjects", label: "Subjects & Enrollment" },
+  { value: "ai", label: "AI & Study Resources" },
+  { value: "system", label: "System & Announcements" },
 ];
 
 export const actionLabel = (code: string): string => ACTION_LABELS[code] || code;

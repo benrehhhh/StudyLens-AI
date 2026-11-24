@@ -1,6 +1,6 @@
 import os, io, json, jwt, secrets, datetime, mimetypes, threading, time
 from functools import wraps
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, g
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
@@ -185,6 +185,22 @@ def _security_headers(response):
         response.headers["Strict-Transport-Security"] = (
             "max-age=31536000; includeSubDomains"
         )
+    return response
+
+
+@app.after_request
+def _persist_pending_audit_logs(response):
+    """Commit audit entries staged via ``log_action`` once the request finishes.
+
+    ``log_action`` intentionally does not commit mid-request (P1-04). Endpoints
+    that record their audit entry after their last explicit commit would
+    otherwise have it rolled back at teardown, silently dropping history such
+    as new registrations. Committing here keeps that invariant while ensuring
+    the staged entry survives the request.
+    """
+    if getattr(g, "audit_log_pending", False):
+        g.audit_log_pending = False
+        _commit_or_warn("pending audit logs")
     return response
 
 

@@ -82,3 +82,56 @@ def test_logs_clear_uses_current_admin_not_hardcoded(client, init_database, app_
         assert cleared is not None
         assert cleared.user_id == "adm-1"
         assert cleared.user_name == "Carol Admin"
+
+
+def test_logs_filter_by_category(client, init_database, app_instance):
+    now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    with app_instance.app_context():
+        for idx, action in enumerate(["USER_LOGIN", "MATERIAL_UPLOAD", "QUIZ_SUBMIT"]):
+            db.session.add(ActivityLogModel(
+                log_id=f"cat-test-{idx}",
+                user_id="stu-1",
+                user_name="Test User",
+                user_role="student",
+                activity=action,
+                details=f"{action} details",
+                ip_address="127.0.0.1",
+                created_at=now,
+            ))
+        db.session.commit()
+        admin = db.session.get(UserModel, "adm-1")
+        headers = auth_headers_for(admin)
+
+    resp = client.get("/api/logs?category=accounts", headers=headers)
+    assert resp.status_code == 200, resp.get_data(as_text=True)
+    actions = [log["action"] for log in resp.get_json()["logs"]]
+    assert actions == ["USER_LOGIN"]
+
+
+def test_logs_stale_page_is_clamped(client, init_database, app_instance):
+    _seed_logs(app_instance, count=3)
+    with app_instance.app_context():
+        admin = db.session.get(UserModel, "adm-1")
+        headers = auth_headers_for(admin)
+
+    resp = client.get("/api/logs?page=99&limit=5", headers=headers)
+    assert resp.status_code == 200, resp.get_data(as_text=True)
+    data = resp.get_json()
+    assert data["page"] == 1
+    assert len(data["logs"]) == 3
+
+
+def test_staged_audit_log_persists_at_request_end(client, init_database, app_instance):
+    with app_instance.app_context():
+        admin = db.session.get(UserModel, "adm-1")
+        headers = auth_headers_for(admin)
+
+    resp = client.post(
+        "/api/logs",
+        json={"action": "TEST_AFTER_COMMIT", "details": "staged at request end"},
+        headers=headers,
+    )
+    assert resp.status_code == 200, resp.get_data(as_text=True)
+
+    with app_instance.app_context():
+        assert ActivityLogModel.query.filter_by(activity="TEST_AFTER_COMMIT").count() == 1
