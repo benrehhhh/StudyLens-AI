@@ -1,6 +1,7 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { GeneratedReport } from "../../types";
-import { chartTooltipProps, BRAND_BAR_FILL, ChartGradientDefs } from "../../utils/chartTheme";
+import { ChartGradientDefs } from "../../utils/chartTheme";
+import { chartTooltipProps, BRAND_BAR_FILL } from "../../utils/chartThemeConstants";
 
 export function ReportDetails({ report }: { report: GeneratedReport }) {
   const s = (report.summary || {}) as Record<string, unknown>;

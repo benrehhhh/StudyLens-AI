@@ -6,7 +6,7 @@ export function CountUp({ value, suffix = "", duration = 700 }: { value: number;
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setShown(value);
+      requestAnimationFrame(() => setShown(value));
       return;
     }
     let raf = 0;

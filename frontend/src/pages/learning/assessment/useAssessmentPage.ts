@@ -119,6 +119,68 @@ export function useAssessmentPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  const handleStartQuiz = useCallback((quiz: Quiz, resume = false) => {
+    if (!resume && currentUser?.role !== "teacher" && currentUser?.role !== "admin" && quiz.isPublished === false) {
+      showToast("This quiz has not been published yet and is not available to students.", "info");
+      return;
+    }
+    const quizAttemptsAllowed = quiz.attemptsAllowed || 0;
+    if (quiz.quizType !== "student" && quizAttemptsAllowed > 0 && (quiz.attemptsUsed || 0) >= quizAttemptsAllowed) {
+      showToast("You have reached the maximum number of attempts allowed for this quiz.", "error");
+      return;
+    }
+    if (currentUser?.role === "student" && isQuizOverdue(quiz)) {
+      showToast("The deadline for this quiz has passed. It has been recorded as Missing.", "error");
+      return;
+    }
+    autoSubmitFiredRef.current = false;
+    const userId = currentUser?.id || "guest";
+    const storageKey = `studylens_quiz_progress_${userId}_${quiz.id}`;
+    const saved = savedProgresses[quiz.id];
+
+    if (resume && saved) {
+      setActiveQuiz(saved.savedQuiz || quiz);
+      setCurrentQIndex(saved.currentQIndex || 0);
+      setUserAnswers(saved.userAnswers || {});
+
+      let endTime = saved.targetEndTime;
+      if (!endTime) {
+        endTime = Date.now() + (saved.timeLeft ?? (quiz.timeLimitMinutes || 15) * 60) * 1000;
+      }
+
+      const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+      setTargetEndTime(endTime);
+      setTimeLeft(remaining);
+
+      if (remaining <= 0) {
+        showToast("The time limit for this quiz has expired while away! Automatically calculating your score now...", "info");
+      }
+    } else {
+      // Starting fresh - clear previous saved progress for this quiz
+      localStorage.removeItem(storageKey);
+      setSavedProgresses((prev) => {
+        const copy = { ...prev };
+        delete copy[quiz.id];
+        return copy;
+      });
+
+      const durationSeconds = (quiz.timeLimitMinutes || 15) * 60;
+      const endTime = Date.now() + durationSeconds * 1000;
+
+      setActiveQuiz(quiz);
+      setCurrentQIndex(0);
+      setUserAnswers({});
+      setTargetEndTime(endTime);
+      setTimeLeft(durationSeconds);
+    }
+
+    setCompletedAttempt(null);
+    setHintsByQuestion({});
+    setHintErrorsByQuestion({});
+    setHintLoadingFor(null);
+    setSubmitError(null);
+  }, [currentUser, showToast, savedProgresses]);
+
   // Fetch Quizzes and Subjects
   useEffect(() => {
     let isSubscribed = true;
@@ -153,7 +215,7 @@ export function useAssessmentPage() {
     return () => {
       isSubscribed = false;
     };
-  }, [currentUser?.id, currentUser?.role, initialQuizId]);
+  }, [currentUser?.id, currentUser?.role, initialQuizId, handleStartQuiz]);
 
   // Submit Quiz Handler
   const handleSubmitQuiz = useCallback(async () => {
@@ -270,68 +332,6 @@ export function useAssessmentPage() {
       localStorage.setItem(storageKey, JSON.stringify(progressData));
     }
   }, [activeQuiz, currentQIndex, userAnswers, timeLeft, targetEndTime, completedAttempt, currentUser?.id]);
-
-  function handleStartQuiz(quiz: Quiz, resume = false) {
-    if (!resume && currentUser?.role !== "teacher" && currentUser?.role !== "admin" && quiz.isPublished === false) {
-      showToast("This quiz has not been published yet and is not available to students.", "info");
-      return;
-    }
-    const quizAttemptsAllowed = quiz.attemptsAllowed || 0;
-    if (quiz.quizType !== "student" && quizAttemptsAllowed > 0 && (quiz.attemptsUsed || 0) >= quizAttemptsAllowed) {
-      showToast("You have reached the maximum number of attempts allowed for this quiz.", "error");
-      return;
-    }
-    if (currentUser?.role === "student" && isQuizOverdue(quiz)) {
-      showToast("The deadline for this quiz has passed. It has been recorded as Missing.", "error");
-      return;
-    }
-    autoSubmitFiredRef.current = false;
-    const userId = currentUser?.id || "guest";
-    const storageKey = `studylens_quiz_progress_${userId}_${quiz.id}`;
-    const saved = savedProgresses[quiz.id];
-
-    if (resume && saved) {
-      setActiveQuiz(saved.savedQuiz || quiz);
-      setCurrentQIndex(saved.currentQIndex || 0);
-      setUserAnswers(saved.userAnswers || {});
-
-      let endTime = saved.targetEndTime;
-      if (!endTime) {
-        endTime = Date.now() + (saved.timeLeft ?? (quiz.timeLimitMinutes || 15) * 60) * 1000;
-      }
-
-      const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-      setTargetEndTime(endTime);
-      setTimeLeft(remaining);
-
-      if (remaining <= 0) {
-        showToast("The time limit for this quiz has expired while away! Automatically calculating your score now...", "info");
-      }
-    } else {
-      // Starting fresh - clear previous saved progress for this quiz
-      localStorage.removeItem(storageKey);
-      setSavedProgresses((prev) => {
-        const copy = { ...prev };
-        delete copy[quiz.id];
-        return copy;
-      });
-
-      const durationSeconds = (quiz.timeLimitMinutes || 15) * 60;
-      const endTime = Date.now() + durationSeconds * 1000;
-
-      setActiveQuiz(quiz);
-      setCurrentQIndex(0);
-      setUserAnswers({});
-      setTargetEndTime(endTime);
-      setTimeLeft(durationSeconds);
-    }
-
-    setCompletedAttempt(null);
-    setHintsByQuestion({});
-    setHintErrorsByQuestion({});
-    setHintLoadingFor(null);
-    setSubmitError(null);
-  }
 
   const handleDiscardProgress = (quizId: string) => {
     const userId = currentUser?.id || "guest";

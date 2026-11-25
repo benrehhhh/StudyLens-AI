@@ -441,7 +441,7 @@ export default function ProfileScreen({ onNavigate }: { onNavigate: (tab: string
                 <Activity size={14} color={colors.primary} style={{ marginTop: 1 }} />
                 <View style={{ flex: 1 }}>
                   <Text style={{ color: colors.foreground, fontSize: 12, fontWeight: '800' }}>{log.action}</Text>
-                  <Text style={{ color: colors.mutedForeground, fontSize: 10 }}>{log.details || log.action}</p>
+                  <Text style={{ color: colors.mutedForeground, fontSize: 10 }}>{log.details || log.action}</Text>
                   <RelativeTime iso={log.timestamp} />
                 </View>
               </View>

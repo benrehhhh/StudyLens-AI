@@ -15,7 +15,8 @@ import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { AnnouncementComposer } from "../../components/AnnouncementComposer";
 import { CardDetailModal, DetailRow } from "../../components/CardDetailModal";
 import type { Subject, Quiz } from "../../types";
-import { chartTooltipProps, BRAND_BAR_FILL, ChartGradientDefs } from "../../utils/chartTheme";
+import { ChartGradientDefs } from "../../utils/chartTheme";
+import { chartTooltipProps, BRAND_BAR_FILL } from "../../utils/chartThemeConstants";
 
 interface TeacherDashboardProps {
   onNavigate: (tab: string) => void;

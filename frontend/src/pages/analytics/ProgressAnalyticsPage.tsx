@@ -17,7 +17,8 @@ import { useToast } from "../../context/ToastContext";
 import { authFetch } from "../../utils/authFetch";
 import { CardDetailModal, WeakTopicsDetail, AttemptsDetail } from "../../components/CardDetailModal";
 import type { StudentProgress, Recommendation, RecommendationStep } from "../../types";
-import { chartTooltipProps, BRAND_BAR_FILL, ChartGradientDefs } from "../../utils/chartTheme";
+import { ChartGradientDefs } from "../../utils/chartTheme";
+import { chartTooltipProps, BRAND_BAR_FILL } from "../../utils/chartThemeConstants";
 
 type DetailCardKey = "weak" | "average" | "assessments";
 

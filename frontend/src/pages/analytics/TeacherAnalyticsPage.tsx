@@ -5,7 +5,8 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import { useAuth } from "../../context/AuthContext";
 import { authFetch } from "../../utils/authFetch";
 import { CardDetailModal } from "../../components/CardDetailModal";
-import { chartTooltipProps, BRAND_BAR_FILL, ChartGradientDefs } from "../../utils/chartTheme";
+import { ChartGradientDefs } from "../../utils/chartTheme";
+import { chartTooltipProps, BRAND_BAR_FILL } from "../../utils/chartThemeConstants";
 
 interface AtRiskStudent {
   id: string;
