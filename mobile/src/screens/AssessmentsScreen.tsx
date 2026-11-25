@@ -1253,7 +1253,9 @@ export default function AssessmentsScreen({
                 ) : null}
                 {!isStaff && savedMap[q.id] ? (
                   <View style={{ flex: 1, flexDirection: 'row', gap: 8 }}>
-                    <OutlineButton label="Restart" onPress={() => startQuiz(q)} style={{ flex: 1 }} />
+                    {q.quizType === 'student' ? (
+                      <OutlineButton label="Restart" onPress={() => startQuiz(q)} style={{ flex: 1 }} />
+                    ) : null}
                     <PrimaryButton label="Resume" onPress={() => startQuiz(q, savedMap[q.id])} style={{ flex: 1 }} />
                   </View>
                 ) : (

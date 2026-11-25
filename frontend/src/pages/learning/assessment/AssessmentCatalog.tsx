@@ -67,22 +67,32 @@ export function AssessmentCatalog({
           </div>
 
           <div className="flex items-center space-x-2 self-start sm:self-center">
-            <button
-              onClick={() => {
-                const foundQuiz = quizzes.find((q) => q.id === firstSaved.quizId) || firstSaved.savedQuiz;
-                if (foundQuiz) onStartQuiz(foundQuiz, true);
-              }}
-              className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-1.5 shadow-sm cursor-pointer"
-            >
-              <Play className="w-3.5 h-3.5 fill-current" />
-              <span>Resume Quiz</span>
-            </button>
-            <button
-              onClick={() => onDiscardProgress(firstSaved.quizId)}
-              className="px-3 py-2 bg-muted hover:bg-rose-500/10 text-muted-foreground hover:text-rose-600 rounded-xl text-xs font-semibold cursor-pointer"
-            >
-              Discard
-            </button>
+            {/* Resolve the saved quiz to check whether it is a personal/practice quiz. */}
+            {(() => {
+              const foundQuiz = quizzes.find((q) => q.id === firstSaved.quizId) || firstSaved.savedQuiz;
+              const isPracticeQuiz = Boolean(foundQuiz && foundQuiz.quizType === 'student' && foundQuiz.createdById === currentUser?.id);
+              return (
+                <>
+                  <button
+                    onClick={() => {
+                      if (foundQuiz) onStartQuiz(foundQuiz, true);
+                    }}
+                    className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-1.5 shadow-sm cursor-pointer"
+                  >
+                    <Play className="w-3.5 h-3.5 fill-current" />
+                    <span>Resume Quiz</span>
+                  </button>
+                  {isPracticeQuiz && (
+                    <button
+                      onClick={() => onDiscardProgress(firstSaved.quizId)}
+                      className="px-3 py-2 bg-muted hover:bg-rose-500/10 text-muted-foreground hover:text-rose-600 rounded-xl text-xs font-semibold cursor-pointer"
+                    >
+                      Discard
+                    </button>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
       )}

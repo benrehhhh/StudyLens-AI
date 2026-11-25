@@ -26,6 +26,7 @@ export const FlashcardsPage: React.FC<FlashcardsPageProps> = ({ onNavigate }) =>
   const [previewDeck, setPreviewDeck] = useState<FlashcardDeck | null>(null);
   const [previewIndex, setPreviewIndex] = useState(0);
   const [previewFlipped, setPreviewFlipped] = useState(false);
+  const [isShuffling, setIsShuffling] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -101,6 +102,8 @@ export const FlashcardsPage: React.FC<FlashcardsPageProps> = ({ onNavigate }) =>
     setCardIndex(0);
     setDeckDone(false);
     setIsFlipped(false);
+    setIsShuffling(true);
+    setTimeout(() => setIsShuffling(false), 450);
   }, [activeDeck]);
 
   // Handle Spacebar key for card flipping
@@ -370,7 +373,7 @@ export const FlashcardsPage: React.FC<FlashcardsPageProps> = ({ onNavigate }) =>
           <div
             key={`card-${activeDeck.id}-${cardIndex}-${isFlipped}`}
             onClick={toggleFlip}
-            className="w-full h-80 perspective-1000 cursor-pointer select-none group"
+            className={`w-full h-80 perspective-1000 transform-style-3d cursor-pointer select-none group ${isShuffling ? "animate-in fade-in zoom-in-95" : ""}`}
           >
             <div
               className={`relative w-full h-full rounded-2xl border-2 transition-transform duration-[650ms] ease-[cubic-bezier(.34,1.4,.5,1)] transform-style-3d shadow-xl ${
