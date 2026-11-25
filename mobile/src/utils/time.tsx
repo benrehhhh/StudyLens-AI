@@ -1,3 +1,6 @@
+import React from 'react';
+import { Text } from 'react-native';
+
 export const formatRelative = (iso?: string): string => {
   if (!iso) return '';
   const date = new Date(iso);
@@ -20,6 +23,9 @@ export const isNewUser = (createdAt?: string, thresholdDays = 7): boolean => {
   const ageDays = (Date.now() - created) / (1000 * 60 * 60 * 24);
   return ageDays <= thresholdDays;
 };
+
+// React component that renders a relative timestamp.
+export const RelativeTime: React.FC<{ iso: string }> = ({ iso }) => <Text style={{ fontSize: 11, color: 'gray' }}>{formatRelative(iso)}</Text>;
 
 // Readable absolute stamp for detail views, e.g. "Aug 25, 2026 · 2:45 PM"
 export const formatExact = (iso?: string): string => {

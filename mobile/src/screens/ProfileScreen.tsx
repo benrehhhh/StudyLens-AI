@@ -150,7 +150,7 @@ export default function ProfileScreen({ onNavigate }: { onNavigate: (tab: string
     try {
       const data = await getJSON(
         `/users/${currentUser.id}/stats`,
-        { quizzesTaken: 0, flashcardsCreated: 0, studyHours: 0, materialsUploaded: 0 }
+        { quizzesTaken: 0, flashcardsCreated: 0, studyHours: 0, materialsUploaded: 0, recentActivity: [] }
       );
       setStats({
         quizzesTaken: data.quizzesTaken ?? 0,

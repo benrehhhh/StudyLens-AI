@@ -186,7 +186,7 @@ export default function FlashcardsScreen({
         </View>
 
         {/* Flip card */}
-        <TouchableOpacity activeOpacity={0.9} onPress={flipCard} style={[styles.flipPress, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <TouchableOpacity activeOpacity={0.9} onPress={flipCard} style={[styles.flipPress, { backgroundColor: colors.card, borderColor: colors.border, transform: [{ scale: shuffleAnim.current }] }]}>
           <View style={StyleSheet.absoluteFill}>
             <Animated.View style={[styles.flipFace, flipFront, isFlipped && styles.hiddenFace]}>
               <View style={styles.faceWrap}>
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
   playerHead: { gap: 10 },
   playerTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   backBtn: { width: 36, height: 36, borderRadius: 18, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
-  flipPress: { flex: 1, minHeight: 320, borderWidth: 1, borderRadius: 28, overflow: 'hidden', boxShadow: '0 8px 14px rgba(0, 0, 0, 0.15)', elevation: 9, transform: [{ scale: shuffleAnim.current }] },
+  flipPress: { flex: 1, minHeight: 320, borderWidth: 1, borderRadius: 28, overflow: 'hidden', boxShadow: '0 8px 14px rgba(0, 0, 0, 0.15)', elevation: 9 },
   previewFlipPress: { minHeight: 220, borderWidth: 1, borderRadius: 24, overflow: 'hidden', boxShadow: '0 6px 12px rgba(0, 0, 0, 0.12)', elevation: 6 },
   previewFlipFace: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   previewFaceWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10, padding: 20, borderRadius: 24 },

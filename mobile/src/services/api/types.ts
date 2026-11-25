@@ -25,6 +25,7 @@ export interface Subject {
   description?: string;
   teacherId: string;
   teacherName: string;
+  teacherDepartment?: string;
   semester?: string;
   course?: string;
   schoolYear?: string;
