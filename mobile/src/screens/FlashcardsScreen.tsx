@@ -37,14 +37,14 @@ export default function FlashcardsScreen({
   const [isFlipped, setIsFlipped] = useState(false);
   const [order, setOrder] = useState<string[]>([]);
   const [explain, setExplain] = useState<string | null>(null);
-  const flipAnim = useRef(new Animated.Value(0)).current;
-  const shuffleAnim = useRef(new Animated.Value(1)).current;
-  const previewFlipAnim = useRef(new Animated.Value(0)).current;
+  const flipAnim = useRef(new Animated.Value(0));
+  const shuffleAnim = useRef(new Animated.Value(1));
+  const previewFlipAnim = useRef(new Animated.Value(0));
 
   const flipCard = () => {
     setIsFlipped((v) => {
       const target = !v;
-      Animated.timing(flipAnim, {
+      Animated.timing(flipAnim.current, {
         toValue: target ? 1 : 0,
         duration: 500,
         useNativeDriver: false,
@@ -54,23 +54,23 @@ export default function FlashcardsScreen({
   };
 
   const flipFront = {
-    transform: [{ perspective: 1000 }, { rotateY: flipAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '180deg'] }) }],
+    transform: [{ perspective: 1000 }, { rotateY: flipAnim.current.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '180deg'] }) }],
   };
   const flipBack = {
-    transform: [{ perspective: 1000 }, { rotateY: flipAnim.interpolate({ inputRange: [0, 1], outputRange: ['180deg', '360deg'] }) }],
+    transform: [{ perspective: 1000 }, { rotateY: flipAnim.current.interpolate({ inputRange: [0, 1], outputRange: ['180deg', '360deg'] }) }],
   };
 
   const openPreview = (deck: FlashcardDeck) => {
     setPreviewDeck(deck);
     setPreviewIndex(0);
     setPreviewFlipped(false);
-    previewFlipAnim.setValue(0);
+    previewFlipAnim.current.setValue(0);
   };
 
   const flipPreview = () => {
     setPreviewFlipped((v) => {
       const target = !v;
-      Animated.timing(previewFlipAnim, {
+      Animated.timing(previewFlipAnim.current, {
         toValue: target ? 1 : 0,
         duration: 500,
         useNativeDriver: false,
@@ -80,10 +80,10 @@ export default function FlashcardsScreen({
   };
 
   const previewFlipFront = {
-    transform: [{ perspective: 1000 }, { rotateY: previewFlipAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '180deg'] }) }],
+    transform: [{ perspective: 1000 }, { rotateY: previewFlipAnim.current.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '180deg'] }) }],
   };
   const previewFlipBack = {
-    transform: [{ perspective: 1000 }, { rotateY: previewFlipAnim.interpolate({ inputRange: [0, 1], outputRange: ['180deg', '360deg'] }) }],
+    transform: [{ perspective: 1000 }, { rotateY: previewFlipAnim.current.interpolate({ inputRange: [0, 1], outputRange: ['180deg', '360deg'] }) }],
   };
 
   const changePreviewIndex = (next: number) => {
@@ -91,7 +91,7 @@ export default function FlashcardsScreen({
     const clamped = Math.max(0, Math.min(previewDeck.cards.length - 1, next));
     setPreviewIndex(clamped);
     setPreviewFlipped(false);
-    previewFlipAnim.setValue(0);
+    previewFlipAnim.current.setValue(0);
   };
 
   useEffect(() => {
@@ -110,20 +110,20 @@ export default function FlashcardsScreen({
     setOrder(shuffle(deck.cards.map((c) => c.id)));
     setCurrentIndex(0);
     setIsFlipped(false);
-    flipAnim.setValue(0);
+    flipAnim.current.setValue(0);
     setExplain(null);
   };
 
   const goNext = (deckId: string) => {
     setIsFlipped(false);
-    flipAnim.setValue(0);
+    flipAnim.current.setValue(0);
     setExplain(null);
     setCurrentIndex((i) => (i < orderedCards.length - 1 ? i + 1 : 0));
   };
 
   const goPrev = (deckId: string) => {
     setIsFlipped(false);
-    flipAnim.setValue(0);
+    flipAnim.current.setValue(0);
     setExplain(null);
     setCurrentIndex((i) => (i > 0 ? i - 1 : orderedCards.length - 1));
   };
@@ -138,11 +138,11 @@ export default function FlashcardsScreen({
     setOrder(shuffle(deck.cards.map((c) => c.id)));
     setCurrentIndex(0);
     setIsFlipped(false);
-    flipAnim.setValue(0);
+    flipAnim.current.setValue(0);
     setExplain(null);
     Animated.sequence([
-      Animated.timing(shuffleAnim, { toValue: 0.94, duration: 100, useNativeDriver: true }),
-      Animated.timing(shuffleAnim, { toValue: 1, duration: 140, useNativeDriver: true }),
+      Animated.timing(shuffleAnim.current, { toValue: 0.94, duration: 100, useNativeDriver: true }),
+      Animated.timing(shuffleAnim.current, { toValue: 1, duration: 140, useNativeDriver: true }),
     ]).start();
   };
 
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
   playerHead: { gap: 10 },
   playerTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   backBtn: { width: 36, height: 36, borderRadius: 18, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
-  flipPress: { flex: 1, minHeight: 320, borderWidth: 1, borderRadius: 28, overflow: 'hidden', boxShadow: '0 8px 14px rgba(0, 0, 0, 0.15)', elevation: 9, transform: [{ scale: shuffleAnim }] },
+  flipPress: { flex: 1, minHeight: 320, borderWidth: 1, borderRadius: 28, overflow: 'hidden', boxShadow: '0 8px 14px rgba(0, 0, 0, 0.15)', elevation: 9, transform: [{ scale: shuffleAnim.current }] },
   previewFlipPress: { minHeight: 220, borderWidth: 1, borderRadius: 24, overflow: 'hidden', boxShadow: '0 6px 12px rgba(0, 0, 0, 0.12)', elevation: 6 },
   previewFlipFace: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   previewFaceWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10, padding: 20, borderRadius: 24 },
