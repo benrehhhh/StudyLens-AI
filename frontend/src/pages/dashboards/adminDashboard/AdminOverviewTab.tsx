@@ -79,7 +79,7 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
       </button>
     </div>
 
-    <RecentActivityTable logs={logs.slice(0, 5)} onLogClick={onLogClick} />
+    <RecentActivityTable logs={logs.slice(0, 5)} onLogClick={onLogClick} onViewAll={onActivityLogs} />
 
     <QuickBulletins
       announcements={announcements}

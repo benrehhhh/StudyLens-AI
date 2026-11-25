@@ -38,7 +38,6 @@ export default function FlashcardsScreen({
   const [order, setOrder] = useState<string[]>([]);
   const [explain, setExplain] = useState<string | null>(null);
   const flipAnim = useRef(new Animated.Value(0)).current;
-  const shuffleAnim = useRef(new Animated.Value(1)).current;
   const previewFlipAnim = useRef(new Animated.Value(0)).current;
 
   const flipCard = () => {
@@ -140,10 +139,6 @@ export default function FlashcardsScreen({
     setIsFlipped(false);
     flipAnim.setValue(0);
     setExplain(null);
-    Animated.sequence([
-      Animated.timing(shuffleAnim, { toValue: 0.94, duration: 100, useNativeDriver: true }),
-      Animated.timing(shuffleAnim, { toValue: 1, duration: 140, useNativeDriver: true }),
-    ]).start();
   };
 
   const handleDeleteDeck = async (deck: FlashcardDeck) => {
@@ -427,7 +422,7 @@ const styles = StyleSheet.create({
   playerHead: { gap: 10 },
   playerTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   backBtn: { width: 36, height: 36, borderRadius: 18, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
-  flipPress: { flex: 1, minHeight: 320, borderWidth: 1, borderRadius: 28, overflow: 'hidden', boxShadow: '0 8px 14px rgba(0, 0, 0, 0.15)', elevation: 9, transform: [{ scale: shuffleAnim }] },
+  flipPress: { flex: 1, minHeight: 320, borderWidth: 1, borderRadius: 28, overflow: 'hidden', boxShadow: '0 8px 14px rgba(0, 0, 0, 0.15)', elevation: 9 },
   previewFlipPress: { minHeight: 220, borderWidth: 1, borderRadius: 24, overflow: 'hidden', boxShadow: '0 6px 12px rgba(0, 0, 0, 0.12)', elevation: 6 },
   previewFlipFace: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   previewFaceWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10, padding: 20, borderRadius: 24 },

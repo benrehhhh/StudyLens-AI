@@ -6,9 +6,10 @@ import { actionLabel, actionCategory } from "./adminDashboardUtils";
 interface RecentActivityTableProps {
   logs: ActivityLog[];
   onLogClick: (log: ActivityLog) => void;
+  onViewAll: () => void;
 }
 
-export const RecentActivityTable: React.FC<RecentActivityTableProps> = ({ logs, onLogClick }) => (
+export const RecentActivityTable: React.FC<RecentActivityTableProps> = ({ logs, onLogClick, onViewAll }) => (
   <div className="bg-card p-6 rounded-2xl border border-border shadow-2xs space-y-4">
     <div className="flex items-center justify-between">
       <h3 className="text-base font-bold text-foreground">Recent Activity</h3>

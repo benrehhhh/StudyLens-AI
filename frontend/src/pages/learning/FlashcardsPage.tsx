@@ -26,8 +26,6 @@ export const FlashcardsPage: React.FC<FlashcardsPageProps> = ({ onNavigate }) =>
   const [previewDeck, setPreviewDeck] = useState<FlashcardDeck | null>(null);
   const [previewIndex, setPreviewIndex] = useState(0);
   const [previewFlipped, setPreviewFlipped] = useState(false);
-  const [shufflePulse, setShufflePulse] = useState(0);
-  const [isShuffling, setIsShuffling] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -103,9 +101,6 @@ export const FlashcardsPage: React.FC<FlashcardsPageProps> = ({ onNavigate }) =>
     setCardIndex(0);
     setDeckDone(false);
     setIsFlipped(false);
-    setShufflePulse((p) => p + 1);
-    setIsShuffling(true);
-    setTimeout(() => setIsShuffling(false), 450);
   }, [activeDeck]);
 
   // Handle Spacebar key for card flipping
@@ -373,9 +368,9 @@ export const FlashcardsPage: React.FC<FlashcardsPageProps> = ({ onNavigate }) =>
           <>
           {/* 3D Flip Card Container */}
           <div
-            key={`card-${activeDeck.id}-${cardIndex}-${isFlipped}-${shufflePulse}`}
+            key={`card-${activeDeck.id}-${cardIndex}-${isFlipped}`}
             onClick={toggleFlip}
-            className={`w-full h-80 perspective-1000 cursor-pointer select-none group ${isShuffling ? "animate-in fade-in zoom-in-95" : ""}`}
+            className="w-full h-80 perspective-1000 cursor-pointer select-none group"
           >
             <div
               className={`relative w-full h-full rounded-2xl border-2 transition-transform duration-[650ms] ease-[cubic-bezier(.34,1.4,.5,1)] transform-style-3d shadow-xl ${

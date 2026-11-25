@@ -1,5 +1,5 @@
 import React from "react";
-import { X, Mail, User, ShieldCheck, Building2 } from "lucide-react";
+import { X, Mail, User, ShieldCheck, Building2, GraduationCap } from "lucide-react";
 import { avatarUrl } from "../utils/avatar";
 
 interface UserInfoModalProps {
