@@ -850,13 +850,24 @@ export default function AssessmentsScreen({
       setResult(null);
       return;
     }
+    // Students cannot discard/exit an instructor-assigned quiz mid-attempt.
+    if (
+      currentUser?.role === 'student' &&
+      activeQuiz &&
+      activeQuiz.quizType !== 'student'
+    ) {
+      showToast(
+        'You must complete this instructor-assigned quiz before exiting.',
+        'error'
+      );
+      return;
+    }
     saveProgress();
     setActiveQuiz(null);
     setQuizFinished(false);
     setResult(null);
     setConfirmExit(false);
   };
-
   if (loading) return <LoadingView label="Loading assessments..." />;
 
   // ---------------- PLAYER ----------------
@@ -1026,7 +1037,13 @@ export default function AssessmentsScreen({
               <ChevronLeft size={20} color={colors.foreground} />
             </TouchableOpacity>
             <View style={{ flex: 1 }} />
-            <TouchableOpacity onPress={() => setConfirmExit(true)} style={[styles.exitBtn, { borderColor: colors.border }]}>
+            <TouchableOpacity onPress={() => {
+              if (currentUser?.role === 'student' && activeQuiz && activeQuiz.quizType !== 'student') {
+                showToast('You must complete this instructor-assigned quiz before exiting.', 'error');
+                return;
+              }
+              setConfirmExit(true);
+            }} style={[styles.exitBtn, { borderColor: colors.border }]}>
               <Text style={{ color: colors.mutedForeground, fontSize: 12, fontWeight: '700' }}>Save & Exit</Text>
             </TouchableOpacity>
             {answers[currentIndex] !== undefined ? (
