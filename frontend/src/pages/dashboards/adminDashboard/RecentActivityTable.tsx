@@ -13,7 +13,7 @@ export const RecentActivityTable: React.FC<RecentActivityTableProps> = ({ logs, 
     <div className="flex items-center justify-between">
       <h3 className="text-base font-bold text-foreground">Recent Activity</h3>
       <button
-        onClick={() => onLogClick(logs[0]!)}
+        onClick={onViewAll}
         className="text-xs font-bold text-primary hover:text-primary/80 flex items-center space-x-1 cursor-pointer"
       >
         <span>View Full Audit Console →</span>

@@ -2,7 +2,6 @@ import { Mail, UserCheck, ShieldCheck, Users } from "lucide-react";
 import { Pagination, slicePage } from "../../../components/Pagination";
 import { avatarUrl, type EnrolledStudent } from "./subjectDetailUtils";
 import { UserInfoModal } from "../../../components/UserInfoModal";
-import { authFetch } from "../../../utils/authFetch";
 import { useState } from "react";
 
 interface PeopleTabProps {
@@ -34,7 +33,6 @@ export function PeopleTab({
     status?: string | null;
     avatar?: string | null;
   } | null>(null);
-  const [loadingTeacher, setLoadingTeacher] = useState(false);
 
   const openStudent = (s: EnrolledStudent) => {
     setSelectedUser({
@@ -43,41 +41,22 @@ export function PeopleTab({
       email: s.email,
       role: "student",
       studentId: s.studentId || undefined,
+      department: s.department,
       avatar: s.avatar,
     });
   };
 
-  const openTeacher = async () => {
-    setLoadingTeacher(true);
-    try {
-      const res = await authFetch(`/api/users/${subject.teacherId}`);
-      if (res.ok) {
-        const u = (await res.json()) as {
-          id: string;
-          name: string;
-          email: string;
-          role: string;
-          department?: string | null;
-          studentId?: string | null;
-          status?: string | null;
-          avatar?: string | null;
-        };
-        setSelectedUser({
-          id: u.id,
-          name: u.name,
-          email: u.email,
-          role: u.role,
-          department: u.department,
-          studentId: u.studentId,
-          status: u.status,
-          avatar: u.avatar,
-        });
-      }
-    } catch {
-      // ignored; modal will show limited info if it opens
-    } finally {
-      setLoadingTeacher(false);
-    }
+  const openTeacher = () => {
+    setSelectedUser({
+      id: subject.teacherId,
+      name: subject.teacherName,
+      email: "",
+      role: "teacher",
+      department: subject.teacherDepartment,
+      studentId: undefined,
+      status: "active",
+      avatar: subject.teacherAvatar,
+    });
   };
   return (
     <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
@@ -115,11 +94,11 @@ export function PeopleTab({
           <div
             className="min-w-0 cursor-pointer hover:text-primary dark:hover:text-indigo-300 transition-colors"
             onClick={openTeacher}
-            title={loadingTeacher ? "Loading instructor info..." : "View instructor profile"}
+            title="View instructor profile"
           >
             <p className="text-xs font-bold text-foreground truncate">{subject.teacherName}</p>
             <p className="text-[10px] text-muted-foreground truncate">
-              Assigned instructor for this subject
+              {subject.teacherDepartment || "College of Computer Studies"}
             </p>
           </div>
         </div>

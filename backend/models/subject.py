@@ -29,6 +29,7 @@ class SubjectModel(db.Model):
             "teacherId": self.teacher_id,
             "teacherName": self.teacher_name,
             "teacherAvatar": getattr(self, "_teacher_avatar", None),
+            "teacherDepartment": getattr(self, "_teacher_department", None),
             "semester": self.semester,
             "course": self.course,
             "schoolYear": self.school_year,

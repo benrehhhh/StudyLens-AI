@@ -4,9 +4,10 @@ import { useToast } from "../context/ToastContext";
 import { User, Mail, Shield, Building2, Calendar, Award, Lock, Edit3, Save, Camera, BookOpen, ShieldCheck, Trash2, Activity, PieChart, Eye, EyeOff } from "lucide-react";
 import { authFetch } from "../utils/authFetch";
 import { avatarUrl } from "../utils/avatar";
+import { RelativeTime } from "../utils/time";
 import { checkPasswordStrength } from "../utils/password";
 import { PasswordRequirements } from "../components/PasswordRequirements";
-import type { User as UserType } from "../types";
+import type { User as UserType, ActivityLog } from "../types";
 
 const translations: Record<string, Record<string, string>> = {
   en: {
@@ -196,6 +197,8 @@ export const ProfilePage: React.FC = () => {
     materialsUploaded: number;
   }>({ quizzesTaken: 0, flashcardsCreated: 0, studyHours: 0, materialsUploaded: 0 });
 
+  const [recentActivity, setRecentActivity] = useState<ActivityLog[]>([]);
+
   React.useEffect(() => {
     const root = document.documentElement;
     if (darkMode) {
@@ -219,6 +222,7 @@ export const ProfilePage: React.FC = () => {
           studyHours: data.studyHours ?? 0,
           materialsUploaded: data.materialsUploaded ?? 0,
         });
+        setRecentActivity(Array.isArray(data.recentActivity) ? data.recentActivity : []);
       }
     } catch {
       // ignore fetch failures, stats stay at 0
@@ -226,12 +230,21 @@ export const ProfilePage: React.FC = () => {
   }, [currentUser]);
 
   React.useEffect(() => {
-    if (currentUser) {
-      const timer = setTimeout(() => {
-        fetchStats();
-      }, 0);
-      return () => clearTimeout(timer);
-    }
+    if (!currentUser) return;
+    const initial = setTimeout(() => fetchStats(), 0);
+    const interval = setInterval(fetchStats, 20000);
+    const onFocus = () => fetchStats();
+    const onVisible = () => {
+      if (document.visibilityState === "visible") fetchStats();
+    };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      clearTimeout(initial);
+      clearInterval(interval);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, [currentUser, fetchStats]);
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -257,6 +270,7 @@ export const ProfilePage: React.FC = () => {
       }
       refreshSession(data);
       showToast("Profile photo updated.");
+      void fetchStats();
     } catch {
       showToast("Could not reach the server. Please try again.", "error");
     } finally {
@@ -281,6 +295,7 @@ export const ProfilePage: React.FC = () => {
       }
       refreshSession(data);
       showToast("Profile photo removed.");
+      void fetchStats();
     } catch {
       showToast("Could not reach the server. Please try again.", "error");
     } finally {
@@ -332,6 +347,7 @@ export const ProfilePage: React.FC = () => {
       await updateUser(updated);
       setIsEditing(false);
       showToast("Profile updated successfully!");
+      void fetchStats();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Could not update your profile. Please try again.", "error");
     }
@@ -364,6 +380,7 @@ export const ProfilePage: React.FC = () => {
         return;
       }
       showToast("Password updated successfully!");
+      void fetchStats();
       // The backend bumped token_version when the password changed, so the old
       // JWT is invalid; swap in the freshly issued token to stay signed in.
       if (data.user) {
@@ -682,29 +699,20 @@ export const ProfilePage: React.FC = () => {
           <Activity className="w-4 h-4 text-indigo-500" />
           {t("Recent Activity", language)}
         </h3>
-        <div className="space-y-3">
-          <div className="flex items-start gap-3 p-3 rounded-xl bg-muted/30 border border-border">
-            <Activity className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-xs font-bold text-foreground">{t("Profile updated", language)}</p>
-              <p className="text-[10px] text-muted-foreground">{t("Just now", language)}</p>
+        {recentActivity.length > 0 ? (
+          recentActivity.map((log) => (
+            <div key={log.id} className="flex items-start gap-3 p-3 rounded-xl bg-muted/30 border border-border">
+              <Activity className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs font-bold text-foreground">{log.action}</p>
+                <p className="text-[10px] text-muted-foreground truncate">{log.details || log.action}</p>
+                <RelativeTime iso={log.timestamp} />
+              </div>
             </div>
-          </div>
-          <div className="flex items-start gap-3 p-3 rounded-xl bg-muted/30 border border-border">
-            <Lock className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-xs font-bold text-foreground">{t("Password changed", language)}</p>
-              <p className="text-[10px] text-muted-foreground">{t("Earlier today", language)}</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3 p-3 rounded-xl bg-muted/30 border border-border">
-            <User className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-xs font-bold text-foreground">{t("Account created", language)}</p>
-              <p className="text-[10px] text-muted-foreground">{new Date(currentUser.createdAt).toLocaleDateString()}</p>
-            </div>
-          </div>
-        </div>
+          ))
+        ) : (
+          <p className="text-[10px] text-muted-foreground text-center py-2">No recent activity yet.</p>
+        )}
       </div>
 
       {/* Account Stats */}

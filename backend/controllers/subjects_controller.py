@@ -61,15 +61,18 @@ def get_subjects():
         .all()
     )
     teacher_ids = {s.teacher_id for s in subs if s.teacher_id}
-    teacher_avatars = dict(
-        db.session.query(UserModel.user_id, UserModel.profile_picture)
+    teacher_rows = (
+        db.session.query(UserModel.user_id, UserModel.profile_picture, UserModel.department)
         .filter(UserModel.user_id.in_(teacher_ids))
         .all()
-    ) if teacher_ids else {}
+    ) if teacher_ids else []
+    teacher_info = {uid: (avatar, dept) for uid, avatar, dept in teacher_rows}
     for s in subs:
         s._roster_count = roster_counts.get(s.subject_id)
         s.material_count = material_counts.get(s.subject_id, 0)
-        s._teacher_avatar = teacher_avatars.get(s.teacher_id)
+        avatar_dept = teacher_info.get(s.teacher_id)
+        s._teacher_avatar = avatar_dept[0] if avatar_dept else None
+        s._teacher_department = avatar_dept[1] if avatar_dept else None
 
     total = len(subs)
     if limit is None and offset is None:
@@ -158,10 +161,12 @@ def update_subject(subject_id):
         sub.teacher_id = teacher.user_id
         sub.teacher_name = teacher.to_dict()["name"]
         sub._teacher_avatar = teacher.profile_picture
+        sub._teacher_department = teacher.department
 
     if not hasattr(sub, "_teacher_avatar"):
         teacher = db.session.get(UserModel, sub.teacher_id)
         sub._teacher_avatar = teacher.profile_picture if teacher else None
+        sub._teacher_department = teacher.department if teacher else None
 
     _commit_or_warn("subject update")
     log_action(request.current_user["id"], request.current_user["name"], "admin", "SUBJECT_UPDATE", f"Updated subject '{sub.subject_code} - {sub.subject_name}'")
@@ -207,6 +212,7 @@ def get_subject(subject_id):
 
     teacher = db.session.get(UserModel, sub.teacher_id)
     sub._teacher_avatar = teacher.profile_picture if teacher else None
+    sub._teacher_department = teacher.department if teacher else None
     return jsonify(sub.to_dict()), 200
 
 
@@ -241,6 +247,7 @@ def get_subject_students(subject_id):
                 "name": student_data["name"],
                 "avatar": student_data.get("avatar"),
                 "studentId": student.student_id,
+                "department": student_data.get("department"),
                 "dateEnrolled": en.date_enrolled
             }
             if include_email:
@@ -297,6 +304,7 @@ def assign_subject_students(subject_id):
                 "avatar": student_data.get("avatar"),
                 "email": student.email,
                 "studentId": student.student_id,
+                "department": student_data.get("department"),
                 "dateEnrolled": en.date_enrolled
             })
     students.sort(key=lambda s: s["name"].lower())

@@ -26,6 +26,8 @@ export const FlashcardsPage: React.FC<FlashcardsPageProps> = ({ onNavigate }) =>
   const [previewDeck, setPreviewDeck] = useState<FlashcardDeck | null>(null);
   const [previewIndex, setPreviewIndex] = useState(0);
   const [previewFlipped, setPreviewFlipped] = useState(false);
+  const [shufflePulse, setShufflePulse] = useState(0);
+  const [isShuffling, setIsShuffling] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -101,6 +103,9 @@ export const FlashcardsPage: React.FC<FlashcardsPageProps> = ({ onNavigate }) =>
     setCardIndex(0);
     setDeckDone(false);
     setIsFlipped(false);
+    setShufflePulse((p) => p + 1);
+    setIsShuffling(true);
+    setTimeout(() => setIsShuffling(false), 450);
   }, [activeDeck]);
 
   // Handle Spacebar key for card flipping
@@ -293,9 +298,9 @@ export const FlashcardsPage: React.FC<FlashcardsPageProps> = ({ onNavigate }) =>
                   <ArrowLeft className="w-4 h-4 text-foreground" />
                 </button>
                 <h2 className="text-sm font-bold text-foreground truncate flex-1">{activeDeck.title}</h2>
-                <span className="text-muted-foreground whitespace-nowrap text-xs">{activeDeck.subjectName}</span>
+                <span className="text-muted-foreground whitespace-nowrap text-xs truncate max-w-[38%]">{activeDeck.subjectName}</span>
               </div>
-              <div className="flex flex-wrap items-center gap-2 shrink-0">
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto sm:shrink-0 min-w-0">
                 <select
                   value={activeDeck.id}
                   onChange={(e) => {
@@ -307,7 +312,7 @@ export const FlashcardsPage: React.FC<FlashcardsPageProps> = ({ onNavigate }) =>
                       setIsFlipped(false);
                     }
                   }}
-                  className="bg-card text-foreground border border-border rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none"
+                  className="bg-card text-foreground border border-border rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none w-full sm:w-auto min-w-0 max-w-full"
                 >
                   {decks.map((d) => (
                     <option key={d.id} value={d.id}>
@@ -368,8 +373,9 @@ export const FlashcardsPage: React.FC<FlashcardsPageProps> = ({ onNavigate }) =>
           <>
           {/* 3D Flip Card Container */}
           <div
+            key={`card-${activeDeck.id}-${cardIndex}-${isFlipped}-${shufflePulse}`}
             onClick={toggleFlip}
-            className="w-full h-80 perspective-1000 cursor-pointer select-none group"
+            className={`w-full h-80 perspective-1000 cursor-pointer select-none group ${isShuffling ? "animate-in fade-in zoom-in-95" : ""}`}
           >
             <div
               className={`relative w-full h-full rounded-2xl border-2 transition-transform duration-[650ms] ease-[cubic-bezier(.34,1.4,.5,1)] transform-style-3d shadow-xl ${

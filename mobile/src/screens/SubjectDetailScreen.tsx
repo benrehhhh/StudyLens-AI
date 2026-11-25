@@ -637,6 +637,11 @@ const confirmDeleteMaterial = (m: Material) => {
         <Text style={{ color: colors.primary, fontSize: 11, fontWeight: '600', marginTop: 8 }}>
           Faculty: {subject.teacherName || 'Faculty'}
         </Text>
+        {subject.teacherDepartment && (
+          <Text style={{ color: colors.mutedForeground, fontSize: 10, marginTop: 2 }}>
+            Department: {subject.teacherDepartment}
+          </Text>
+        )}
       </View>
 
       {/* Tab bar */}
@@ -693,7 +698,9 @@ const confirmDeleteMaterial = (m: Material) => {
               <Text style={{ color: colors.foreground, fontSize: 13, fontWeight: '800' }} numberOfLines={1}>
                 {subject.teacherName || 'Faculty'}
               </Text>
-              <Text style={{ color: colors.mutedForeground, fontSize: 11 }}>Assigned instructor for this subject</Text>
+              <Text style={{ color: colors.mutedForeground, fontSize: 10 }}>
+                {subject.teacherDepartment || 'College of Computer Studies'}
+              </Text>
             </View>
             <Badge text="Teacher" color={colors.primary} bg={colors.primarySoft} />
           </View>
@@ -717,7 +724,7 @@ const confirmDeleteMaterial = (m: Material) => {
                       {s.name}
                     </Text>
                     <Text style={{ color: colors.mutedForeground, fontSize: 11 }} numberOfLines={1}>
-                      {s.studentId || s.email}
+                      Student ID: {s.studentId || s.email}
                     </Text>
                   </View>
                 </View>

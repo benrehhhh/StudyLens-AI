@@ -86,13 +86,13 @@ export const AnnouncementsView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Toolbar */}
-      <div className="flex items-center justify-end gap-3 flex-wrap">
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3 flex-wrap">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto min-w-0">
           {/* Subject Filter */}
           <select
             value={selectedSubjectFilter}
             onChange={(e) => setSelectedSubjectFilter(e.target.value)}
-            className="px-3 py-1.5 bg-muted/50 border border-border rounded-xl text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full sm:w-auto min-w-0 px-3 py-1.5 bg-muted/50 border border-border rounded-xl text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="all">All Subjects</option>
             {subjects.map((sub) => (
@@ -119,7 +119,7 @@ export const AnnouncementsView: React.FC = () => {
                 setEditingAnn(null);
                 setShowPostModal(true);
               }}
-              className="px-4 py-1.5 bg-cta-gradient hover:brightness-110 text-white rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 shadow-xs cursor-pointer"
+              className="px-4 py-1.5 bg-cta-gradient hover:brightness-110 text-white rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 shadow-xs cursor-pointer w-full sm:w-auto justify-center"
             >
               <Plus className="w-4 h-4" />
               <span>Post Announcement</span>

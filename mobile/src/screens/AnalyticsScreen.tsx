@@ -8,6 +8,7 @@ import { useToast } from '../context/ToastContext';
 import { Card, StatCard, SectionHeader, ProgressBar, EmptyState, Modal } from '../components/ui';
 import { ThemedBarChart, ThemedLineChart } from '../components/Charts';
 import { formatRelative } from '../utils/time';
+import { openQuizById, navTo } from '../navigation/navigationRef';
 import {
   getApiBaseUrl,
   getAuthToken,
@@ -391,7 +392,22 @@ export default function AnalyticsScreen({
                     Suggested steps
                   </Text>
                   {rec.steps.map((s) => (
-                    <View key={`${rec.id}-${s.step}`} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+                    <TouchableOpacity
+                      key={`${rec.id}-${s.step}`}
+                      style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}
+                      activeOpacity={0.7}
+                      onPress={() => {
+                        if (s.type === 'quiz' && s.targetId) {
+                          openQuizById(s.targetId);
+                        } else if (s.type === 'flashcard') {
+                          navTo('flashcards');
+                        } else if (s.type === 'reviewer' || s.type === 'summary') {
+                          navTo('ai-assistant');
+                        } else {
+                          navTo('materials');
+                        }
+                      }}
+                    >
                       <View style={[styles.stepDot, { backgroundColor: colors.primary }]}>
                         <Text style={{ color: '#fff', fontSize: 10, fontWeight: '900' }}>{s.step}</Text>
                       </View>
@@ -399,7 +415,7 @@ export default function AnalyticsScreen({
                         <Text style={{ fontWeight: '800' }}>{stepLabel(s.type)}: </Text>
                         {s.title}
                       </Text>
-                    </View>
+                    </TouchableOpacity>
                   ))}
                 </View>
               )}

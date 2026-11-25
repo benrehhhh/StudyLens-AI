@@ -44,8 +44,8 @@ export function MaterialsCatalog({
           </span>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-          <div className="flex items-center space-x-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto min-w-0">
+          <div className="flex items-center space-x-2 w-full sm:w-auto min-w-0">
             <Filter className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
             <select
               value={selectedSubject}
@@ -53,7 +53,7 @@ export function MaterialsCatalog({
                 onSubjectChange(e.target.value);
                 onPageChange(1);
               }}
-              className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-muted text-foreground font-medium focus:outline-none flex-1 sm:flex-none"
+              className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-muted text-foreground font-medium focus:outline-none w-full sm:w-auto min-w-0 max-w-full"
             >
               <option value="all">All Subjects</option>
               {subjects.map((s) => (

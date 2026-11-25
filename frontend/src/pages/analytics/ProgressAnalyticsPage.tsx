@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { TrendingUp, Download, BarChart2, ChevronRight } from "lucide-react";
 import {
@@ -16,7 +16,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import { authFetch } from "../../utils/authFetch";
 import { CardDetailModal, WeakTopicsDetail, AttemptsDetail } from "../../components/CardDetailModal";
-import type { StudentProgress, Recommendation } from "../../types";
+import type { StudentProgress, Recommendation, RecommendationStep } from "../../types";
 import { chartTooltipProps, BRAND_BAR_FILL, ChartGradientDefs } from "../../utils/chartTheme";
 
 type DetailCardKey = "weak" | "average" | "assessments";
@@ -39,31 +39,33 @@ function stepTypeLabel(type: string): string {
   }
 }
 
-const handleStepClick = (step: RecommendationStep) => {
-  if (!step.targetId) return;
-  switch (step.type) {
-    case "quiz":
-      navigate(`/assessments?quizId=${encodeURIComponent(step.targetId)}`);
-      break;
-    case "review":
-      navigate(`/subjects?material=${encodeURIComponent(step.targetId)}`);
-      break;
-    case "flashcard":
-      navigate("/flashcards");
-      break;
-    case "reviewer":
-    case "summary":
-      navigate("/ai-assistant");
-      break;
-    default:
-      break;
-  }
-};
-
 export const ProgressAnalyticsPage: React.FC<{ onOpenWeakTopic?: (topic: string) => void }> = ({ onOpenWeakTopic }) => {
   const { currentUser } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const handleStepClick = useCallback(
+    (step: RecommendationStep) => {
+      if (!step.targetId) return;
+      switch (step.type) {
+        case "quiz":
+          navigate(`/assessments?quizId=${encodeURIComponent(step.targetId)}`);
+          break;
+        case "review":
+          navigate(`/subjects?material=${encodeURIComponent(step.targetId)}`);
+          break;
+        case "flashcard":
+          navigate("/flashcards");
+          break;
+        case "reviewer":
+        case "summary":
+          navigate("/ai-assistant");
+          break;
+        default:
+          break;
+      }
+    },
+    [navigate]
+  );
   const [progress, setProgress] = useState<StudentProgress | null>(null);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [exportingPDF, setExportingPDF] = useState(false);

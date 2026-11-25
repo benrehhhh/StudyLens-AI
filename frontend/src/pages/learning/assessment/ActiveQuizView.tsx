@@ -1,4 +1,4 @@
-import { CheckSquare, Clock, CheckCircle2, X } from "lucide-react";
+import { CheckSquare, Clock, X } from "lucide-react";
 import type { Quiz, QuizQuestion } from "../../../types";
 import { CORRECT_ANSWER_CARD_CLASS, formatTime } from "./assessmentUtils";
 
@@ -130,12 +130,6 @@ export function ActiveQuizView({
                         <span className="font-bold mr-2">{String.fromCharCode(65 + oIdx)}.</span>
                         {opt}
                       </span>
-                      {isSelected &&
-                        (isMulti ? (
-                          <CheckSquare className="w-4 h-4 text-primary" />
-                        ) : (
-                          <CheckCircle2 className="w-4 h-4 text-green-500" />
-                        ))}
                     </button>
                   );
                 })}

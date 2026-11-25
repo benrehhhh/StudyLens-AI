@@ -9,6 +9,7 @@ export interface EnrolledStudent {
   avatar?: string | null;
   studentId: string;
   dateEnrolled: string;
+  department?: string | null;
 }
 
 export interface AdminUser {

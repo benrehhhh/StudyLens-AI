@@ -12,6 +12,7 @@ import { useAuth } from "../context/AuthContext";
 import { RelativeTime } from "../utils/time";
 import { authFetch } from "../utils/authFetch";
 import { avatarUrl } from "../utils/avatar";
+import { ConfirmDialog } from "./ConfirmDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -74,6 +75,7 @@ export function DashboardLayout({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [viewAllOpen, setViewAllOpen] = useState(false);
+  const [pendingQuiz, setPendingQuiz] = useState<{ id: string; title: string } | null>(null);
   const notifRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -145,7 +147,8 @@ export function DashboardLayout({
     }
     markNotificationRead(item.id.replace(/^notif-/, ""));
     if (item.target && item.target.startsWith("quiz:")) {
-      navigate(`/assessments?quizId=${encodeURIComponent(item.target.slice(5))}`);
+      const quizId = item.target.slice(5);
+      setPendingQuiz({ id: quizId, title: item.title });
       return;
     }
     if (item.target && item.target.startsWith("material:")) {
@@ -551,6 +554,20 @@ export function DashboardLayout({
           </div>
         </div>
       )}
+      <ConfirmDialog
+        open={pendingQuiz !== null}
+        title="Start a timed quiz?"
+        message={`This quiz is timed. The timer begins immediately when you open "${pendingQuiz?.title || "the quiz"}". Do you want to start it now?`}
+        confirmLabel="Start Quiz"
+        cancelLabel="Not now"
+        onConfirm={() => {
+          if (pendingQuiz) {
+            navigate(`/assessments?quizId=${encodeURIComponent(pendingQuiz.id)}`);
+          }
+          setPendingQuiz(null);
+        }}
+        onCancel={() => setPendingQuiz(null)}
+      />
     </div>
   );
 }

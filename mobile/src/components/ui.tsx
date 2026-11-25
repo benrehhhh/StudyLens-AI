@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   badge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   sectionTitle: { fontSize: 17, fontWeight: '800' },
-  statCard: { width: '48%', flexGrow: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', minHeight: 92 },
+  statCard: { width: '30%', flexGrow: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', minHeight: 92 },
   statLabel: { fontSize: 12, fontWeight: '600' },
   statValue: { fontSize: 26, fontWeight: '800', letterSpacing: -0.5 },
   statIcon: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },

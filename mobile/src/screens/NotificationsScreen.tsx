@@ -1,5 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import { Bell, Megaphone, CheckCheck } from 'lucide-react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { useToast } from '../context/ToastContext';
@@ -38,14 +45,17 @@ export default function NotificationsScreen({ onNavigate, onOpenQuiz }: { onNavi
     if (b.notificationId) markNotificationRead(b.notificationId);
     if (b.target && b.target.startsWith('quiz:')) {
       const quizId = b.target.slice(5);
-      if (onOpenQuiz) {
-        onOpenQuiz(quizId);
-      } else {
-        showToast(b.title, 'info');
-      }
-    } else {
-      showToast(b.title, 'info');
+      Alert.alert(
+        'Start this quiz?',
+        'This quiz is timed. The timer begins immediately once you open it.',
+        [
+          { text: 'Not now', style: 'cancel' },
+          { text: 'Start Quiz', onPress: () => { if (onOpenQuiz) onOpenQuiz(quizId); } },
+        ]
+      );
+      return;
     }
+    showToast(b.title, 'info');
   };
 
   return (

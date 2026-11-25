@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
-import { Building2, Calendar, Edit3, Save, Camera, FileBadge, Trash2, Activity, Lock, User } from 'lucide-react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, ActivityIndicator, AppState } from 'react-native';
+import { Building2, Calendar, Edit3, Save, Camera, FileBadge, Trash2, Activity } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../theme/ThemeContext';
@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { uploadAvatar, resolveMaterialFileUrl, getJSON } from '../services/api';
 import { Card, Badge, Field, PrimaryButton, OutlineButton, SectionHeader } from '../components/ui';
+import { RelativeTime } from '../utils/time';
 
 const translations: Record<string, Record<string, string>> = {
   en: {
@@ -143,6 +144,7 @@ export default function ProfileScreen({ onNavigate }: { onNavigate: (tab: string
     materialsUploaded: number;
   }>({ quizzesTaken: 0, flashcardsCreated: 0, studyHours: 0, materialsUploaded: 0 });
 
+  const [recentActivity, setRecentActivity] = useState<{ id: string; action: string; details: string; timestamp: string }[]>([]);
   const fetchStats = async () => {
     if (!currentUser) return;
     try {
@@ -156,16 +158,26 @@ export default function ProfileScreen({ onNavigate }: { onNavigate: (tab: string
         studyHours: data.studyHours ?? 0,
         materialsUploaded: data.materialsUploaded ?? 0,
       });
+      setRecentActivity(Array.isArray(data.recentActivity) ? data.recentActivity : []);
     } catch {
       // ignore fetch failures, stats stay at 0
     }
   };
 
   useEffect(() => {
-    if (currentUser) {
-      fetchStats();
-    }
-  }, []);
+    if (!currentUser) return;
+    fetchStats();
+    const interval = setInterval(fetchStats, 20000);
+    const onFocus = () => fetchStats();
+    const onVisible = () => {
+      if (AppState && AppState.currentState === 'active') fetchStats();
+    };
+    const subscription = AppState.addEventListener('change', onVisible);
+    return () => {
+      clearInterval(interval);
+      subscription.remove();
+    };
+  }, [currentUser]);
 
   if (!currentUser) return null;
 
@@ -235,6 +247,7 @@ export default function ProfileScreen({ onNavigate }: { onNavigate: (tab: string
     setIsEditing(false);
     updateProfile({ name: name.trim(), email: email.trim() }).catch(() => showToast('Could not save profile changes.', 'error'));
     showToast('Profile updated successfully!');
+    void fetchStats();
   };
 
   const handlePasswordChange = async () => {
@@ -422,27 +435,20 @@ export default function ProfileScreen({ onNavigate }: { onNavigate: (tab: string
       <Card style={styles.panel}>
         <SectionHeader title={t("Recent Activity", language)} />
         <View style={{ gap: 10 }}>
-          <View style={[styles.activityItem, { backgroundColor: colors.surfaceAlt, borderColor: colors.border }]}>
-            <Activity size={14} color={colors.primary} style={{ marginTop: 1 }} />
-            <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.foreground, fontSize: 12, fontWeight: '800' }}>{t("Profile updated", language)}</Text>
-              <Text style={{ color: colors.mutedForeground, fontSize: 10 }}>{t("Just now", language)}</Text>
-            </View>
-          </View>
-          <View style={[styles.activityItem, { backgroundColor: colors.surfaceAlt, borderColor: colors.border }]}>
-            <Lock size={14} color={colors.primary} style={{ marginTop: 1 }} />
-            <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.foreground, fontSize: 12, fontWeight: '800' }}>{t("Password changed", language)}</Text>
-              <Text style={{ color: colors.mutedForeground, fontSize: 10 }}>{t("Earlier today", language)}</Text>
-            </View>
-          </View>
-          <View style={[styles.activityItem, { backgroundColor: colors.surfaceAlt, borderColor: colors.border }]}>
-            <User size={14} color={colors.primary} style={{ marginTop: 1 }} />
-            <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.foreground, fontSize: 12, fontWeight: '800' }}>{t("Account created", language)}</Text>
-              <Text style={{ color: colors.mutedForeground, fontSize: 10 }}>{new Date(currentUser.createdAt).toLocaleDateString()}</Text>
-            </View>
-          </View>
+          {recentActivity.length > 0 ? (
+            recentActivity.map((log) => (
+              <View key={log.id} style={[styles.activityItem, { backgroundColor: colors.surfaceAlt, borderColor: colors.border }]}>
+                <Activity size={14} color={colors.primary} style={{ marginTop: 1 }} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: colors.foreground, fontSize: 12, fontWeight: '800' }}>{log.action}</Text>
+                  <Text style={{ color: colors.mutedForeground, fontSize: 10 }}>{log.details || log.action}</p>
+                  <RelativeTime iso={log.timestamp} />
+                </View>
+              </View>
+            ))
+          ) : (
+            <Text style={{ color: colors.mutedForeground, fontSize: 10, textAlign: 'center', paddingVertical: 16 }}>No recent activity yet.</Text>
+          )}
         </View>
       </Card>
 

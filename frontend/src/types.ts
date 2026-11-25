@@ -20,6 +20,7 @@ export interface Subject {
   teacherId: string;
   teacherName: string;
   teacherAvatar?: string | null;
+  teacherDepartment?: string | null;
   studentCount: number;
   materialCount: number;
   semester?: string;

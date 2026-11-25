@@ -15,6 +15,7 @@ from models import (
     AIGeneratedContentModel,
     AnnouncementModel,
     AuthSessionModel,
+    ActivityLogModel,
     MaterialModel,
     QuizAttemptModel,
     QuizModel,
@@ -288,11 +289,29 @@ def get_user_stats(user_id):
 
     materials_uploaded = MaterialModel.query.filter_by(teacher_id=user_id).count()
 
+    recent_activity = (
+        ActivityLogModel.query.filter_by(user_id=user_id)
+        .order_by(ActivityLogModel.created_at_dt.desc().nullslast(), ActivityLogModel.created_at.desc())
+        .limit(5)
+        .all()
+    )
+
     return jsonify({
         "quizzesTaken": quizzes_taken,
         "flashcardsCreated": flashcards_created,
         "studyHours": study_hours,
         "materialsUploaded": materials_uploaded,
+        "recentActivity": [
+            {
+                "id": log.log_id,
+                "action": log.activity,
+                "details": log.details or log.activity,
+                "timestamp": log.created_at_dt.isoformat().replace("+00:00", "Z")
+                if log.created_at_dt
+                else (log.created_at or ""),
+            }
+            for log in recent_activity
+        ],
     }), 200
 
 

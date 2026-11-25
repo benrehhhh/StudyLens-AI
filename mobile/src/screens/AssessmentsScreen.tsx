@@ -982,9 +982,6 @@ export default function AssessmentsScreen({
                         <Text style={{ color: selected ? colors.primary : colors.foreground, fontSize: 14, fontWeight: '600', flex: 1 }}>
                           {String.fromCharCode(65 + idx)}. {opt}
                         </Text>
-                        {selected && (isMulti
-                          ? <CheckSquare size={18} color={colors.primary} />
-                          : <CheckCircle2 size={18} color={colors.primary} />)}
                       </TouchableOpacity>
                     );
                   })}

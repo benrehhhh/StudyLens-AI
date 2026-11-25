@@ -325,11 +325,11 @@ export default function MaterialsScreen({ onNavigate, onCreateNotes }: { onNavig
       <View style={[styles.panel, { backgroundColor: colors.card, borderColor: colors.border, gap: 12 }]}>
         <SectionHeader title="Materials Catalog" subtitle={`${materials.length} document(s)`} />
         {filterOptions.length > 1 && (
-          <View>
+          <View style={{ width: '100%' }}>
             <Text style={styles.fieldLabel}>Filter by Subject</Text>
             <TouchableOpacity
               onPress={() => setShowFilterDropdown(true)}
-              style={[styles.dropdown, { borderColor: colors.border, backgroundColor: colors.surfaceAlt }]}
+              style={[styles.dropdown, { width: '100%', borderColor: colors.border, backgroundColor: colors.surfaceAlt }]}
             >
               <Text style={{ color: colors.foreground, fontSize: 12, fontWeight: '700', flex: 1 }}>
                 {subjectFilter === 'all' ? 'All Subjects' : filterOptions.find(([id]) => id === subjectFilter)?.[1] || 'All Subjects'}

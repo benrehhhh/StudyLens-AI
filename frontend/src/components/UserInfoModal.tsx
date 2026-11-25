@@ -1,5 +1,5 @@
 import React from "react";
-import { X, Mail, User, ShieldCheck, GraduationCap, Building2 } from "lucide-react";
+import { X, Mail, User, ShieldCheck, Building2 } from "lucide-react";
 import { avatarUrl } from "../utils/avatar";
 
 interface UserInfoModalProps {
@@ -77,8 +77,14 @@ export const UserInfoModal: React.FC<UserInfoModalProps> = ({
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Account ID</p>
-              <p className="text-sm font-mono text-foreground truncate">{user.id}</p>
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                {user.role === "student"
+                  ? "Student ID"
+                  : user.role === "teacher"
+                    ? "Teacher ID"
+                    : "Admin ID"}
+              </p>
+              <p className="text-sm font-mono text-foreground truncate">{user.studentId || user.id}</p>
             </div>
           </div>
 
@@ -97,15 +103,6 @@ export const UserInfoModal: React.FC<UserInfoModalProps> = ({
                 <p className="text-sm text-foreground truncate">{user.department || "—"}</p>
               </div>
             </div>
-            {user.studentId && (
-              <div className="flex items-center gap-3">
-                <GraduationCap className="w-4 h-4 shrink-0 text-muted-foreground" />
-                <div className="min-w-0">
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Student ID</p>
-                  <p className="text-sm text-foreground truncate">{user.studentId}</p>
-                </div>
-              </div>
-            )}
             <div className="flex items-center gap-3">
               <ShieldCheck className="w-4 h-4 shrink-0 text-muted-foreground" />
               <div className="min-w-0">
