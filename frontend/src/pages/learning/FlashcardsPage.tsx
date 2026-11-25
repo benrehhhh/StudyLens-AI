@@ -376,7 +376,7 @@ export const FlashcardsPage: React.FC<FlashcardsPageProps> = ({ onNavigate }) =>
             className={`w-full h-80 perspective-1000 transform-style-3d cursor-pointer select-none group ${isShuffling ? "animate-in fade-in zoom-in-95" : ""}`}
           >
             <div
-              className={`relative w-full h-full rounded-2xl border-2 transition-transform duration-[650ms] ease-[cubic-bezier(.34,1.4,.5,1)] transform-style-3d shadow-xl ${
+              className={`relative w-full h-full rounded-2xl border-2 transition-transform duration-500 transform-style-3d shadow-xl ${
                 isFlipped ? "rotate-y-180 border-primary bg-card" : "border-border bg-card hover:border-primary/50"
               }`}
             >
