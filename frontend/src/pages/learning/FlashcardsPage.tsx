@@ -371,7 +371,7 @@ export const FlashcardsPage: React.FC<FlashcardsPageProps> = ({ onNavigate }) =>
           <>
           {/* 3D Flip Card Container */}
           <div
-            key={`card-${activeDeck.id}-${cardIndex}-${isFlipped}`}
+            key={`card-${activeDeck.id}-${cardIndex}`}
             onClick={toggleFlip}
             className={`w-full h-80 perspective-1000 transform-style-3d cursor-pointer select-none group ${isShuffling ? "animate-in fade-in zoom-in-95" : ""}`}
           >
