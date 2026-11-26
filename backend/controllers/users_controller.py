@@ -291,7 +291,7 @@ def get_user_stats(user_id):
 
     recent_activity = (
         ActivityLogModel.query.filter_by(user_id=user_id)
-        .order_by(ActivityLogModel.created_at_dt.desc().nullslast(), ActivityLogModel.created_at.desc())
+        .order_by(ActivityLogModel.created_at.desc())
         .limit(5)
         .all()
     )
