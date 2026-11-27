@@ -1,3 +1,5 @@
+import { clearStoredUser } from "./authStorage";
+
 const CSRF_COOKIE_NAME = "studylens_csrf";
 const UNSAFE_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 const NO_REFRESH_PATHS = [
@@ -50,11 +52,7 @@ export const authHeaders = (extra?: Record<string, string>, method?: string): Re
 const expireSession = () => {
   if (_loggedOut) return;
   _loggedOut = true;
-  try {
-    localStorage.removeItem("studylens_user");
-  } catch {
-  // localStorage may be unavailable in private mode.
-  }
+  clearStoredUser();
   window.dispatchEvent(new CustomEvent("auth:session-expired"));
   setTimeout(() => { _loggedOut = false; }, 5000);
 };

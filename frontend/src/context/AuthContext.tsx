@@ -2,12 +2,18 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import type { User, UserRole } from "../types";
 import { authFetch, setCsrfToken } from "../utils/authFetch";
 import { avatarUrl } from "../utils/avatar";
+import {
+  clearStoredUser,
+  readStoredUser,
+  setRememberPreference,
+  writeStoredUser,
+} from "../utils/authStorage";
 
 interface AuthContextType {
   currentUser: User | null;
   pendingEmailVerification: { userId: string; email: string; devCode?: string } | null;
   pending2FA: { userId: string; email: string; expiresInMinutes?: number; devCode?: string } | null;
-  login: (emailOrUser: string | Partial<User>, role?: UserRole, password?: string) => Promise<void>;
+  login: (emailOrUser: string | Partial<User>, role?: UserRole, password?: string, rememberMe?: boolean) => Promise<void>;
   register: (name: string, email: string, role: UserRole, department?: string, password?: string) => Promise<void>;
   verifyEmail: (userId: string, code: string) => Promise<void>;
   resendEmailCode: (userId: string) => Promise<void>;
@@ -36,12 +42,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    try {
-      const saved = localStorage.getItem("studylens_user");
-      return saved ? sanitizeAvatar(JSON.parse(saved)) : null;
-    } catch {
-      return null;
-    }
+    const saved = readStoredUser<User>();
+    return saved ? sanitizeAvatar(saved) : null;
   });
   const [pendingEmailVerification, setPendingEmailVerification] = useState<{ userId: string; email: string; devCode?: string } | null>(() => {
     try {
@@ -63,11 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const saveUserSession = (user: User) => {
     const cleanUser = sanitizeAvatar(user);
     setCurrentUser(cleanUser);
-    try {
-      localStorage.setItem("studylens_user", JSON.stringify(cleanUser));
-    } catch (e) {
-      console.error("Failed to save session to localStorage", e);
-    }
+    writeStoredUser(cleanUser);
   };
 
   // Persists the pending email-verification step (userId + email only, never
@@ -102,7 +100,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const login = async (emailOrUser: string | Partial<User>, role?: UserRole, password?: string) => {
+  const login = async (
+    emailOrUser: string | Partial<User>,
+    role?: UserRole,
+    password?: string,
+    rememberMe = false
+  ) => {
     try {
       let emailStr = "";
       let userRole = role;
@@ -122,11 +125,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: emailStr, role: userRole, user: customUser, password: userPassword }),
+        body: JSON.stringify({ email: emailStr, role: userRole, user: customUser, password: userPassword, rememberMe }),
       });
 
       if (res.ok) {
         const data = await res.json();
+        // Persist the choice before branching so the email-verification / 2FA
+        // steps save the eventual session into the same storage.
+        setRememberPreference(rememberMe);
         if (data.csrfToken) {
           setCsrfToken(data.csrfToken);
         }
@@ -171,6 +177,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       if (res.ok) {
         const data = await res.json();
+        // Sign-ups are kept signed in across restarts (there is no remember-me
+        // checkbox on the registration form).
+        setRememberPreference(true);
         if (data.requiresEmailVerification) {
           setPendingVerification({
             userId: data.userId,
@@ -314,12 +323,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setPendingVerification(null);
     setPending2FA(null);
     setCsrfToken(null);
-    try {
-      localStorage.removeItem("studylens_user");
-      localStorage.removeItem("studylens_remembered_email");
-    } catch (e) {
-      console.error("Failed to clear localStorage session", e);
-    }
+    // Keep the remembered email/preference so the sign-in form still prefills
+    // for users who opted into "Remember me".
+    clearStoredUser();
   };
 
   useEffect(() => {
@@ -328,11 +334,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setPendingVerification(null);
       setPending2FA(null);
       setCsrfToken(null);
-      try {
-        localStorage.removeItem("studylens_user");
-      } catch (e) {
-        console.error("Failed to clear localStorage session", e);
-      }
+      clearStoredUser();
     };
     window.addEventListener("auth:session-expired", onSessionExpired);
     return () => window.removeEventListener("auth:session-expired", onSessionExpired);

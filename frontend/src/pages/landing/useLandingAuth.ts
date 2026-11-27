@@ -2,20 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import { checkPasswordStrength } from "../../utils/password";
+import { getRememberPreference, readRememberedEmail, writeRememberedEmail } from "../../utils/authStorage";
 import type { UserRole } from "../../types";
 import {
   FORGOT_RESET_KEY,
   readForgotReset,
   readStoredPending,
 } from "./landingStorage";
-
-const readRememberedEmail = (): string => {
-  try {
-    return localStorage.getItem("studylens_remembered_email") || "";
-  } catch {
-    return "";
-  }
-};
 
 export type LandingTab = "home" | "features" | "about" | "contact";
 
@@ -66,7 +59,7 @@ export function useLandingAuth() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [role, setRole] = useState<UserRole>("student");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState<boolean>(() => getRememberPreference());
 
   const [forgotOpen, setForgotOpen] = useState(() => readForgotReset().open);
   const [forgotEmail, setForgotEmail] = useState(() => readForgotReset().email);
@@ -111,7 +104,7 @@ export function useLandingAuth() {
     setShowPassword(false);
     setShowConfirmPassword(false);
     setRole("student");
-    setRememberMe(false);
+    setRememberMe(mode === "login" ? getRememberPreference() : false);
     setVerifyCode("");
     setVerifyError("");
     setVerifyNotice("");
@@ -197,18 +190,10 @@ export function useLandingAuth() {
           showToast("Please enter your email address.", "error");
           return;
         }
-        await login(email.trim(), role, password);
+        await login(email.trim(), role, password, rememberMe);
         setPassword("");
         setConfirmPassword("");
-        try {
-          if (rememberMe) {
-            localStorage.setItem("studylens_remembered_email", email.trim());
-          } else {
-            localStorage.removeItem("studylens_remembered_email");
-          }
-        } catch {
-          // storage unavailable - skip persisting the remember-me preference
-        }
+        writeRememberedEmail(rememberMe ? email.trim() : null);
       }
     } catch (err) {
       const errMsg = (err as Error).message || "Authentication failed. Please check your credentials.";
