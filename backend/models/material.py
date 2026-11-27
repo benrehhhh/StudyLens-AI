@@ -1,7 +1,6 @@
 from extensions import db
 from models.subject import SubjectModel
 from models.user import UserModel
-from sqlalchemy import DateTime
 from sqlalchemy.orm import relationship
 
 class MaterialModel(db.Model):
@@ -16,7 +15,6 @@ class MaterialModel(db.Model):
     file_size = db.Column(db.String(32), nullable=True)
     extracted_text = db.Column(db.Text, nullable=True)
     uploaded_at = db.Column(db.String(64), nullable=False)
-    uploaded_at_dt = db.Column(DateTime(timezone=True), nullable=True)
     material_type = db.Column(db.String(50), default="course")
     uploaded_by = db.Column(db.String(128), nullable=False, default="Faculty")
     uploader_role = db.Column(db.String(32), nullable=False, default="teacher")
@@ -63,7 +61,7 @@ class MaterialModel(db.Model):
             "uploaderRole": self.uploader_role,
             "uploaderId": self.teacher_id,
             "materialType": self.material_type,
-            "createdAt": self.uploaded_at_dt.isoformat().replace("+00:00", "Z") if self.uploaded_at_dt else (self.uploaded_at or ""),
+            "createdAt": self.uploaded_at or "",
         }
 
 class MaterialFlagModel(db.Model):
@@ -79,9 +77,7 @@ class MaterialFlagModel(db.Model):
     note = db.Column(db.Text, nullable=True)
     status = db.Column(db.String(20), nullable=False, default="pending")
     created_at = db.Column(db.String(64), nullable=False)
-    created_at_dt = db.Column(DateTime(timezone=True), nullable=True)
     resolved_at = db.Column(db.String(64), nullable=True)
-    resolved_at_dt = db.Column(DateTime(timezone=True), nullable=True)
     resolved_by = db.Column(db.String(64), nullable=True)
     resolution_note = db.Column(db.Text, nullable=True)
 
@@ -114,8 +110,8 @@ class MaterialFlagModel(db.Model):
             "category": self.category,
             "note": self.note,
             "status": self.status,
-            "createdAt": self.created_at_dt.isoformat().replace("+00:00", "Z") if self.created_at_dt else (self.created_at or ""),
-            "resolvedAt": self.resolved_at_dt.isoformat().replace("+00:00", "Z") if self.resolved_at_dt else (self.resolved_at or ""),
+            "createdAt": self.created_at or "",
+            "resolvedAt": self.resolved_at or "",
             "resolvedById": self.resolved_by,
             "resolvedByName": name_for(self.resolved_by),
             "resolutionNote": self.resolution_note,
@@ -130,4 +126,3 @@ class AIGeneratedContentModel(db.Model):
     content_type = db.Column(db.String(32), nullable=False)
     generated_text = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.String(64), nullable=False)
-    created_at_dt = db.Column(DateTime(timezone=True), nullable=True)

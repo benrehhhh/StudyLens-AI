@@ -49,4 +49,23 @@ def test_data_repairs_run(app_instance):
         migrations._STARTUP_REPAIRS_RAN = False
         db.drop_all()
         run_startup_repairs(app_instance)
+
+
+def test_no_unused_datetime_columns_are_mapped():
+    """Native ``*_dt`` datetime columns were never populated and are removed."""
+    for model in migrations.ALL_MODELS:
+        dt_columns = {c.name for c in model.__table__.columns if c.name.endswith("_dt")}
+        assert dt_columns == set(), f"{model.__tablename__} still maps {dt_columns}"
+
+
+def test_dead_columns_are_not_mapped():
+    """Orphan/dead columns must not be part of the ORM schema."""
+    from models import QuizModel, UserModel
+
+    quiz_columns = {c.name for c in QuizModel.__table__.columns}
+    user_columns = {c.name for c in UserModel.__table__.columns}
+    assert "instructions" not in quiz_columns
+    assert "middle_name" not in user_columns
+    assert "updated_at" not in user_columns
+    assert "updated_at_dt" not in user_columns
     

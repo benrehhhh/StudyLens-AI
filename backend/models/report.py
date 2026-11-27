@@ -1,7 +1,6 @@
 import json
 
 from extensions import db
-from sqlalchemy import DateTime
 
 class ReportModel(db.Model):
     __tablename__ = "reports"
@@ -9,7 +8,6 @@ class ReportModel(db.Model):
     generated_by = db.Column(db.String(64), db.ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
     report_type = db.Column(db.String(100), nullable=False)
     generated_at = db.Column(db.String(64), nullable=False)
-    generated_at_dt = db.Column(DateTime(timezone=True), nullable=True)
     title = db.Column(db.String(255), nullable=False)
     summary_json = db.Column(db.Text, nullable=True)
     target_id = db.Column(db.String(64), nullable=True)
@@ -21,7 +19,7 @@ class ReportModel(db.Model):
             "id": self.report_id,
             "generatedBy": self.generated_by,
             "reportType": self.report_type,
-            "generatedAt": self.generated_at_dt.isoformat().replace("+00:00", "Z") if self.generated_at_dt else (self.generated_at or ""),
+            "generatedAt": self.generated_at or "",
             "title": self.title,
             "summary": summary,
             "targetId": self.target_id

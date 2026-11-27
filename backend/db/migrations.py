@@ -78,7 +78,7 @@ def _alembic_version_table_exists(cfg):
 
     from extensions import db
 
-    return inspect(db.engine).has_table("version_table")
+    return inspect(db.engine).has_table("alembic_version")
 
 
 def run_migrations():
@@ -249,37 +249,6 @@ def _add_missing_columns():
                     short_msg = str(e).splitlines()[0][:160] if str(e) else e.__class__.__name__
                     print(f"[Database] could not resize column {table}.{col_name}: {short_msg}")
 
-            # Add missing *_dt native datetime columns that SQLAlchemy expects but
-            # MySQL lacks. These are added explicitly because the generic
-            # column-type compilation above may not produce a MySQL-compatible
-            # type for DateTime(timezone=True).
-            dt_column_map = {
-                "ai_generated_content": ("created_at_dt", "updated_at_dt"),
-                "activity_logs": ("created_at_dt",),
-                "announcements": ("created_at_dt", "updated_at_dt"),
-                "quizzes": ("created_at_dt", "updated_at_dt"),
-                "quiz_attempts": ("submitted_at_dt",),
-                "reports": ("created_at_dt", "updated_at_dt"),
-                "subjects": ("created_at_dt", "updated_at_dt"),
-                "users": ("created_at_dt", "last_login_dt", "locked_until_dt",
-                          "two_factor_expires_at_dt", "reset_otp_expires_at_dt",
-                          "email_verify_expires_at_dt"),
-            }
-            dt_cols_to_add = dt_column_map.get(table, ())
-            for col_name in dt_cols_to_add:
-                if col_name in existing:
-                    continue
-                try:
-                    conn.execute(
-                        text(
-                            f"ALTER TABLE {table} "
-                            f"ADD COLUMN {col_name} DATETIME(6) NULL"
-                        )
-                    )
-                    print(f"[Database] added missing column {table}.{col_name} DATETIME(6)")
-                except Exception as e:
-                    short_msg = str(e).splitlines()[0][:160] if str(e) else e.__class__.__name__
-                    print(f"[Database] could not add column {table}.{col_name}: {short_msg}")
             conn.commit()
 
 

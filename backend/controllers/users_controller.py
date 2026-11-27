@@ -306,9 +306,7 @@ def get_user_stats(user_id):
                 "id": log.log_id,
                 "action": log.activity,
                 "details": log.details or log.activity,
-                "timestamp": log.created_at_dt.isoformat().replace("+00:00", "Z")
-                if log.created_at_dt
-                else (log.created_at or ""),
+                "timestamp": log.created_at or "",
             }
             for log in recent_activity
         ],

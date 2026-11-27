@@ -1,5 +1,4 @@
 from extensions import db
-from sqlalchemy import DateTime
 from sqlalchemy.orm import relationship
 
 class NotificationModel(db.Model):
@@ -9,9 +8,7 @@ class NotificationModel(db.Model):
     title = db.Column(db.String(255), nullable=False)
     message = db.Column(db.Text, nullable=False)
     read_at = db.Column(db.String(64), nullable=True)
-    read_at_dt = db.Column(DateTime(timezone=True), nullable=True)
     created_at = db.Column(db.String(64), nullable=False)
-    created_at_dt = db.Column(DateTime(timezone=True), nullable=True)
     target = db.Column(db.String(255), nullable=True)
 
     def to_dict(self):
@@ -21,7 +18,7 @@ class NotificationModel(db.Model):
             "title": self.title,
             "message": self.message,
             "isRead": bool(self.read_at),
-            "createdAt": self.created_at_dt.isoformat().replace("+00:00", "Z") if self.created_at_dt else (self.created_at or ""),
+            "createdAt": self.created_at or "",
             "target": self.target or None
         }
 
@@ -33,11 +30,8 @@ class AnnouncementModel(db.Model):
     title = db.Column(db.String(255), nullable=False)
     message = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.String(64), nullable=False)
-    created_at_dt = db.Column(DateTime(timezone=True), nullable=True)
     updated_at = db.Column(db.String(64), nullable=True)
-    updated_at_dt = db.Column(DateTime(timezone=True), nullable=True)
     posted_at = db.Column(db.String(64), nullable=True)
-    posted_at_dt = db.Column(DateTime(timezone=True), nullable=True)
     author_name = db.Column(db.String(128), nullable=False, default="Faculty")
     target_audience = db.Column(db.String(32), default="all")
     priority = db.Column(db.String(32), default="medium")
@@ -75,5 +69,5 @@ class AnnouncementModel(db.Model):
             "priority": self.priority,
             "subjectId": self.subject_id,
             "subjectName": subject_name,
-            "createdAt": self.created_at_dt.isoformat().replace("+00:00", "Z") if self.created_at_dt else (self.created_at or ""),
+            "createdAt": self.created_at or "",
         }

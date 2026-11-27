@@ -1,5 +1,4 @@
 from extensions import db
-from sqlalchemy import DateTime
 from sqlalchemy.orm import relationship
 
 class SubjectModel(db.Model):
@@ -16,7 +15,6 @@ class SubjectModel(db.Model):
     student_count = db.Column(db.Integer, default=51)
     material_count = db.Column(db.Integer, default=0)
     created_at = db.Column(db.String(64), nullable=False)
-    created_at_dt = db.Column(DateTime(timezone=True), nullable=True)
 
     teacher = db.relationship("UserModel", foreign_keys=[teacher_id])
 
@@ -35,7 +33,7 @@ class SubjectModel(db.Model):
             "schoolYear": self.school_year,
             "studentCount": self.student_count,
             "materialCount": self.material_count,
-            "createdAt": self.created_at_dt.isoformat().replace("+00:00", "Z") if self.created_at_dt else (self.created_at or ""),
+            "createdAt": self.created_at or "",
         }
 
 class StudentSubjectModel(db.Model):

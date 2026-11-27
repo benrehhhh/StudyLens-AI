@@ -1,7 +1,6 @@
 import json
 
 from extensions import db
-from sqlalchemy import DateTime
 from lib.quiz import normalize_question_shape
 
 def _quiz_questions_for(quiz_id):
@@ -96,7 +95,6 @@ class QuizModel(db.Model):
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=True)
     status = db.Column(db.String(30), default="active")
-    instructions = db.Column(db.Text, nullable=True)
     subject_id = db.Column(db.String(64), nullable=False)
     subject_name = db.Column(db.String(128), nullable=False)
     created_by_name = db.Column(db.String(128), nullable=False, default="Christian C. Barral, MIT")
@@ -109,9 +107,7 @@ class QuizModel(db.Model):
     attempts_allowed = db.Column(db.Integer, default=0)
     reveal_answers = db.Column(db.Boolean, default=True)
     deadline = db.Column(db.String(64), nullable=True)
-    deadline_dt = db.Column(DateTime(timezone=True), nullable=True)
     created_at = db.Column(db.String(64), nullable=False)
-    created_at_dt = db.Column(DateTime(timezone=True), nullable=True)
 
     def to_dict(self):
         qs = _quiz_questions_for(self.quiz_id)
@@ -138,8 +134,8 @@ class QuizModel(db.Model):
             "difficulty": self.difficulty,
             "attemptsAllowed": self.attempts_allowed or 0,
             "revealAnswers": True if self.reveal_answers is None else bool(self.reveal_answers),
-            "deadline": self.deadline_dt.isoformat().replace("+00:00", "Z") if self.deadline_dt else (self.deadline or ""),
-            "createdAt": self.created_at_dt.isoformat().replace("+00:00", "Z") if self.created_at_dt else (self.created_at or "")
+            "deadline": self.deadline or "",
+            "createdAt": self.created_at or ""
         }
 
 class QuizQuestionModel(db.Model):
@@ -183,7 +179,6 @@ class QuizAttemptModel(db.Model):
     score = db.Column(db.Float, nullable=False)
     time_taken = db.Column(db.Integer, default=300)
     submitted_at = db.Column(db.String(64), nullable=False)
-    submitted_at_dt = db.Column(DateTime(timezone=True), nullable=True)
     quiz_title = db.Column(db.String(256), nullable=False)
     student_name = db.Column(db.String(128), nullable=False)
     subject_id = db.Column(db.String(64), nullable=False)
@@ -217,9 +212,9 @@ class QuizAttemptModel(db.Model):
             "passed": self.passed,
             "timeTaken": self.time_taken,
             "answers": ans,
-            "submittedAt": self.submitted_at_dt.isoformat().replace("+00:00", "Z") if self.submitted_at_dt else (self.submitted_at or ""),
+            "submittedAt": self.submitted_at or "",
             "feedback": ans,
             "weakTopics": wt,
             "strongTopics": st,
-            "completedAt": self.submitted_at_dt.isoformat().replace("+00:00", "Z") if self.submitted_at_dt else (self.submitted_at or "")
+            "completedAt": self.submitted_at or ""
         }

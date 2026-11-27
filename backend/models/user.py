@@ -1,6 +1,4 @@
 from extensions import db
-from sqlalchemy import DateTime
-import datetime
 
 class RoleModel(db.Model):
     __tablename__ = "roles"
@@ -21,24 +19,18 @@ class UserModel(db.Model):
     student_id = db.Column(db.String(64), nullable=True)
     status = db.Column(db.String(30), default="active")
     created_at = db.Column(db.String(64), nullable=False)
-    created_at_dt = db.Column(DateTime(timezone=True), nullable=True)
     last_login = db.Column(db.String(64), nullable=True)
-    last_login_dt = db.Column(DateTime(timezone=True), nullable=True)
     two_factor_code = db.Column(db.String(16), nullable=True)
     two_factor_expires_at = db.Column(db.String(64), nullable=True)
-    two_factor_expires_at_dt = db.Column(DateTime(timezone=True), nullable=True)
     failed_login_attempts = db.Column(db.Integer, nullable=True)
     two_factor_attempts = db.Column(db.Integer, nullable=True)
     locked_until = db.Column(db.String(64), nullable=True)
-    locked_until_dt = db.Column(DateTime(timezone=True), nullable=True)
     reset_otp = db.Column(db.String(16), nullable=True)
     reset_otp_expires_at = db.Column(db.String(64), nullable=True)
-    reset_otp_expires_at_dt = db.Column(DateTime(timezone=True), nullable=True)
     reset_otp_attempts = db.Column(db.Integer, nullable=True)
     email_verified = db.Column(db.Integer, nullable=True)
     email_verify_code = db.Column(db.String(64), nullable=True)
     email_verify_expires_at = db.Column(db.String(64), nullable=True)
-    email_verify_expires_at_dt = db.Column(DateTime(timezone=True), nullable=True)
     email_verify_attempts = db.Column(db.Integer, nullable=True)
     token_version = db.Column(db.Integer, nullable=True)
 
@@ -56,7 +48,7 @@ class UserModel(db.Model):
             "department": self.department,
             "studentId": self.student_id,
             "status": self.status,
-            "createdAt": self.created_at_dt.isoformat().replace("+00:00", "Z") if self.created_at_dt else (self.created_at or ""),
-            "lastLogin": self.last_login_dt.isoformat().replace("+00:00", "Z") if self.last_login_dt else (self.last_login or ""),
+            "createdAt": self.created_at or "",
+            "lastLogin": self.last_login or "",
             "tokenVersion": self.token_version or 0,
         }
