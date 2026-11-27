@@ -39,7 +39,6 @@ export const LogInspectionModal: React.FC<LogInspectionModalProps> = ({ open, on
             <div>
               <span className="text-muted-foreground block text-[10px] uppercase font-sans">Event Action</span>
               <span className={`font-bold text-sm ${actionCategory(log.action).badge}`}>{actionLabel(log.action)}</span>
-              <span className="block text-[10px] font-mono text-muted-foreground">{log.action}</span>
             </div>
             <div>
               <span className="text-muted-foreground block text-[10px] uppercase font-sans">Log ID</span>

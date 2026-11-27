@@ -1,0 +1,67 @@
+export const ACTION_LABELS: Record<string, string> = {
+  USER_LOGIN: "User logged in",
+  USER_REGISTER: "New account registered",
+  USER_CREATED: "User account created",
+  USER_UPDATED: "User profile updated",
+  USER_STATUS_CHANGED: "Account status changed",
+  USER_DELETED: "User account deleted",
+  PASSWORD_RESET: "Password reset",
+  RESET_OTP_REQUESTED: "Password reset requested",
+  PASSWORD_CHANGED: "Password changed",
+  LOGIN_FAILED: "Failed login attempt",
+  LOGIN_LOCKED: "Login temporarily blocked",
+  ACCOUNT_LOCKED: "Account locked",
+  LOGIN_DISABLED: "Login blocked (disabled account)",
+  EMAIL_VERIFY_REQUIRED: "Email verification required",
+  EMAIL_VERIFY_RESUMED: "Registration resumed",
+  EMAIL_VERIFIED: "Email address verified",
+  TWO_FACTOR_REQUIRED: "Two-factor code issued",
+  LOGOUT_ALL_DEVICES: "Signed out of all devices",
+  MATERIAL_UPLOAD: "Material uploaded",
+  MATERIAL_UPDATE: "Material updated",
+  MATERIAL_DELETE: "Material deleted",
+  MATERIAL_AI_SAVE: "AI material saved",
+  MATERIAL_FLAG: "Material flagged for review",
+  MATERIAL_FLAG_RESOLVED: "Material flag resolved",
+  QUIZ_CREATE: "Quiz created",
+  QUIZ_UPDATE: "Quiz updated",
+  QUIZ_DELETE: "Quiz deleted",
+  QUIZ_PUBLISH: "Quiz published",
+  QUIZ_UNPUBLISH: "Quiz unpublished",
+  QUIZ_SUBMIT: "Quiz submitted",
+  ANNOUNCEMENT_POSTED: "Announcement posted",
+  ANNOUNCEMENT_DELETED: "Announcement deleted",
+  SETTINGS_UPDATED: "Settings updated",
+  SYSTEM_BOOT: "System boot",
+  SUBJECT_CREATE: "Subject created",
+  SUBJECT_UPDATE: "Subject updated",
+  SUBJECT_DELETE: "Subject deleted",
+  SUBJECT_ENROLL: "Students assigned to subject",
+  SUBJECT_UNENROLL: "Students removed from subject",
+  AI_QUIZ_GENERATE: "AI quiz generated",
+  AI_SUMMARY_GENERATE: "AI summary generated",
+  AI_REVIEWER_GENERATE: "AI reviewer generated",
+  AI_FLASHCARDS_GENERATE: "AI flashcards generated",
+  AI_RESOURCE_GENERATE: "AI resource generated",
+  AI_RESOURCE_SAVE: "AI resource saved",
+  AI_SERVICE_DOWN: "AI service unavailable",
+  FLASHCARD_UPDATE: "Flashcard deck updated",
+  FLASHCARD_DELETE: "Flashcard deck deleted",
+  SUMMARY_UPDATE: "Summary updated",
+  SUMMARY_DELETE: "Summary deleted",
+  REVIEWER_UPDATE: "Reviewer updated",
+  REVIEWER_DELETE: "Reviewer deleted",
+  REPORT_GENERATE: "Report generated",
+  LOGS_CLEARED: "Activity logs cleared",
+  DIAGNOSTIC_CHECK: "System diagnostic run",
+};
+
+/** Turn an unmapped code like "SOME_CODE" into "Some code". */
+const humanizeActionCode = (code: string): string =>
+  code
+    .toLowerCase()
+    .replace(/_/g, " ")
+    .replace(/^\w/, (c) => c.toUpperCase());
+
+export const actionLabel = (code: string): string =>
+  ACTION_LABELS[code] || humanizeActionCode(code);

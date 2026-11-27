@@ -261,7 +261,7 @@ def _add_missing_columns():
                 "quiz_attempts": ("submitted_at_dt",),
                 "reports": ("created_at_dt", "updated_at_dt"),
                 "subjects": ("created_at_dt", "updated_at_dt"),
-                "users": ("created_at_dt", "updated_at_dt", "last_login_dt", "locked_until_dt",
+                "users": ("created_at_dt", "last_login_dt", "locked_until_dt",
                           "two_factor_expires_at_dt", "reset_otp_expires_at_dt",
                           "email_verify_expires_at_dt"),
             }

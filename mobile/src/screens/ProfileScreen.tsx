@@ -9,6 +9,7 @@ import { useToast } from '../context/ToastContext';
 import { uploadAvatar, resolveMaterialFileUrl, getJSON } from '../services/api';
 import { Card, Badge, Field, PrimaryButton, OutlineButton, SectionHeader } from '../components/ui';
 import { RelativeTime } from '../utils/time';
+import { actionLabel } from '../utils/activity';
 
 const translations: Record<string, Record<string, string>> = {
   en: {
@@ -440,8 +441,8 @@ export default function ProfileScreen({ onNavigate }: { onNavigate: (tab: string
               <View key={log.id} style={[styles.activityItem, { backgroundColor: colors.surfaceAlt, borderColor: colors.border }]}>
                 <Activity size={14} color={colors.primary} style={{ marginTop: 1 }} />
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: colors.foreground, fontSize: 12, fontWeight: '800' }}>{log.action}</Text>
-                  <Text style={{ color: colors.mutedForeground, fontSize: 10 }}>{log.details || log.action}</Text>
+                  <Text style={{ color: colors.foreground, fontSize: 12, fontWeight: '800' }}>{actionLabel(log.action)}</Text>
+                  <Text style={{ color: colors.mutedForeground, fontSize: 10 }}>{log.details || actionLabel(log.action)}</Text>
                   <RelativeTime iso={log.timestamp} />
                 </View>
               </View>

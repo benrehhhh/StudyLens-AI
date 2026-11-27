@@ -5,6 +5,7 @@ import { User, Mail, Shield, Building2, Calendar, Award, Lock, Edit3, Save, Came
 import { authFetch } from "../utils/authFetch";
 import { avatarUrl } from "../utils/avatar";
 import { RelativeTime } from "../utils/time";
+import { actionLabel } from "../utils/activity";
 import { checkPasswordStrength } from "../utils/password";
 import { PasswordRequirements } from "../components/PasswordRequirements";
 import type { User as UserType, ActivityLog } from "../types";
@@ -704,8 +705,8 @@ export const ProfilePage: React.FC = () => {
             <div key={log.id} className="flex items-start gap-3 p-3 rounded-xl bg-muted/30 border border-border">
               <Activity className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs font-bold text-foreground">{log.action}</p>
-                <p className="text-[10px] text-muted-foreground truncate">{log.details || log.action}</p>
+                <p className="text-xs font-bold text-foreground">{actionLabel(log.action)}</p>
+                <p className="text-[10px] text-muted-foreground truncate">{log.details || actionLabel(log.action)}</p>
                 <RelativeTime iso={log.timestamp} />
               </div>
             </div>

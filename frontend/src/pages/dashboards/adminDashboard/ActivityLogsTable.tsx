@@ -58,7 +58,6 @@ export const ActivityLogsTable: React.FC<ActivityLogsTableProps> = ({
                   <span className={`px-2 py-0.5 rounded-md text-[11px] font-bold ${actionCategory(log.action).badge}`}>
                     {actionLabel(log.action)}
                   </span>
-                  <span className="block text-[10px] font-mono text-muted-foreground mt-0.5">{log.action}</span>
                 </td>
                 <td className="p-3">
                   <p className="font-bold text-foreground">{log.userName}</p>
